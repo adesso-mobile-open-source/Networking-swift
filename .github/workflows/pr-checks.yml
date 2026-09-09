@@ -9,5 +9,3 @@ jobs:
   checks:
     uses: adesso-mobile-open-source/workflows-swift/.github/workflows/pr-checks.yml@main
     secrets: inherit
-    with:
-      linux: always
