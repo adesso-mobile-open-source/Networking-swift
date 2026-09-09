@@ -6,4 +6,4 @@ permissions:
   contents: read
 jobs:
   label:
-    uses: adesso-mobile-open-source/workflows-swift/.github/workflows/pr-label-check.yml@v1.0.3
+    uses: adesso-mobile-open-source/workflows-swift/.github/workflows/pr-label-check.yml@main
