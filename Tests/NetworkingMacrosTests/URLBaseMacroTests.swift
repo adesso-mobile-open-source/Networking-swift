@@ -11,14 +11,12 @@
 //
 
 #if os(macOS)
+@testable import NetworkingMacros
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
 
-@testable import NetworkingMacros
-
 final class URLBaseMacroTests: XCTestCase {
-
     private let macros: [String: any Macro.Type] = ["URLBase": URLBaseMacro.self]
 
     // MARK: - Valid expansion

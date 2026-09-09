@@ -81,5 +81,5 @@ public extension NetworkRequest {
     var headers: [HTTPHeader: String] { [:] }
 
     /// Default implementation — accepts any 2xx status code.
-    var allowedStatusCodes: Range<Int> { 200..<300 }
+    var allowedStatusCodes: Range<Int> { 200 ..< 300 }
 }

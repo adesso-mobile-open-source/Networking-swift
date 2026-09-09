@@ -32,9 +32,9 @@ import Networking
 
 @main
 struct ExampleApp {
-
     // ============================================================
     // MARK: Step 1 — Create the environment and NetworkClient
+
     // ============================================================
     //
     // NetworkEnvironment holds the base URL for all requests sent through
@@ -57,6 +57,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Entry point
+
     // ============================================================
 
     static func main() async {
@@ -74,6 +75,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Step 2 — Static path, response body
+
     // ============================================================
     //
     // GetUserRequest uses a fixed #URLPath("users/1").
@@ -94,6 +96,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Step 3 — Dynamic path via @URLPathTemplate
+
     // ============================================================
     //
     // GetPostRequest is annotated with @URLPathTemplate("posts/{id}").
@@ -116,6 +119,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Step 4 — Query parameters + response body
+
     // ============================================================
     //
     // ListPostsRequest conforms to NetworkRequestWithQuery.
@@ -140,6 +144,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Step 5 — POST with request body and response body
+
     // ============================================================
     //
     // CreatePostRequest conforms to both NetworkRequestWithBody and
@@ -173,6 +178,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Step 6 — Narrowed allowedStatusCodes
+
     // ============================================================
     //
     // GetTodoRequest sets allowedStatusCodes to 200..<201, so only an
@@ -196,6 +202,7 @@ struct ExampleApp {
 
     // ============================================================
     // MARK: Step 7 — Demonstrate error handling
+
     // ============================================================
     //
     // Requesting a non-existent resource (id 99999) causes the server to
@@ -219,7 +226,7 @@ struct ExampleApp {
             print("  Caught expected error: HTTP \(code)")
             print(
                 "  → The library throws a typed, overload-specific error (NetworkSendResponseError)" +
-                " — no stringly-typed error handling needed."
+                    " — no stringly-typed error handling needed."
             )
         } catch {
             print("  Caught error: \(error)")

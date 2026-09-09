@@ -14,7 +14,7 @@ import Foundation
 
 // MARK: - Swift standard library
 
-// Signed integers
+/// Signed integers
 extension Int: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
@@ -35,7 +35,7 @@ extension Int64: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
 
-// Unsigned integers
+/// Unsigned integers
 extension UInt: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
@@ -56,7 +56,7 @@ extension UInt64: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
 
-// Floating point
+/// Floating point
 extension Float: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
@@ -65,25 +65,25 @@ extension Double: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
 
-// Boolean
+/// Boolean
 extension Bool: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }
 
-// String
+/// String
 extension String: PathParameterStringConvertible {
     public var stringRepresentation: String { self }
 }
 
 // MARK: - Foundation
 
-// UUID — uses uuidString (uppercase, hyphenated) rather than description,
-// which on some platforms adds additional formatting.
+/// UUID — uses uuidString (uppercase, hyphenated) rather than description,
+/// which on some platforms adds additional formatting.
 extension UUID: PathParameterStringConvertible {
     public var stringRepresentation: String { uuidString }
 }
 
-// Decimal — preferred over Double for monetary/precise numeric path segments.
+/// Decimal — preferred over Double for monetary/precise numeric path segments.
 extension Decimal: PathParameterStringConvertible {
     public var stringRepresentation: String { description }
 }

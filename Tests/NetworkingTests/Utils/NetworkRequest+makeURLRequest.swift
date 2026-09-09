@@ -29,7 +29,7 @@ extension NetworkRequest {
         query: [URLQueryItem] = [],
         headers: [String: String]? = nil // swiftlint:disable:this discouraged_optional_collection
     ) -> URLRequest {
-        let resolved = environment.base + self.path
+        let resolved = environment.base + path
         let url = query.isEmpty ? resolved.url : resolved.appending(queryItems: query).url
         var request = URLRequest(url: url)
         request.httpMethod = method.methodString

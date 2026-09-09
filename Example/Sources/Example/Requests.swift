@@ -79,10 +79,10 @@ struct CreatePostRequest: NetworkRequestWithBody, NetworkRequestWithResponse {
     var path: URLPath { #URLPath("posts") }
     let body: NewPost
 
-    // JSONPlaceholder returns 201 Created for successful POST requests.
-    // Override the default 200..<300 range to only accept exactly 201,
-    // making the intent explicit and catching unexpected 200 responses.
-    var allowedStatusCodes: Range<Int> { 201..<202 }
+    /// JSONPlaceholder returns 201 Created for successful POST requests.
+    /// Override the default 200..<300 range to only accept exactly 201,
+    /// making the intent explicit and catching unexpected 200 responses.
+    var allowedStatusCodes: Range<Int> { 201 ..< 202 }
 }
 
 // MARK: - 5. GET todo — narrowed allowedStatusCodes
@@ -97,5 +97,5 @@ struct GetTodoRequest: NetworkRequestWithResponse {
     typealias ResponseBody = Todo
     let method: HTTPMethod = .get
 
-    var allowedStatusCodes: Range<Int> { 200..<201 }
+    var allowedStatusCodes: Range<Int> { 200 ..< 201 }
 }

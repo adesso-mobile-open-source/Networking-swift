@@ -96,7 +96,7 @@ public extension NetworkClientImpl {
     func send<R>(
         request requestConfiguration: R
     ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
+        where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -131,7 +131,7 @@ public extension NetworkClientImpl {
     func send<R, T>(
         request requestConfiguration: R
     ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse, R.ResponseBody == T? {
+        where R: NetworkRequestWithResponse, R.ResponseBody == T? {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -170,7 +170,7 @@ public extension NetworkClientImpl {
     func send<R, T>(
         request requestConfiguration: R
     ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T? {
+        where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T? {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -383,9 +383,9 @@ private extension URLError {
              .secureConnectionFailed,
              .clientCertificateRejected,
              .clientCertificateRequired:
-            return .secureConnectionNotPossible
+            .secureConnectionNotPossible
         default:
-            return .unknownURLError(self)
+            .unknownURLError(self)
         }
     }
 }

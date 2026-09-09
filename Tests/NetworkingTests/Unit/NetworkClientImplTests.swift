@@ -362,18 +362,18 @@ extension NetworkClientImplTests {
     @Test
     func `allowedStatusCodes when Default then Is200To300`() {
         let request = TestNetworkRequest()
-        #expect(request.allowedStatusCodes == 200..<300)
+        #expect(request.allowedStatusCodes == 200 ..< 300)
     }
 
     @Test
     func `allowedStatusCodes when CustomRange then UsesCustomRange`() {
         struct CustomRequest: NetworkRequest {
-            let path: URLPath = URLPath(unsafeValue: "stub")
+            let path: URLPath = .init(unsafeValue: "stub")
             let method: HTTPMethod = .get
-            var allowedStatusCodes: Range<Int> { 200..<202 }
+            var allowedStatusCodes: Range<Int> { 200 ..< 202 }
         }
         let request = CustomRequest()
-        #expect(request.allowedStatusCodes == 200..<202)
+        #expect(request.allowedStatusCodes == 200 ..< 202)
     }
 
     // MARK: - Environment Based URL Composition
@@ -680,21 +680,21 @@ private struct TestNetworkRequestWithQuery: NetworkRequest, NetworkRequestWithQu
 }
 
 private struct TestNetworkRequestWithEmptyQuery: NetworkRequest, NetworkRequestWithQuery {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let query: EmptyQuery
 }
 
 private struct TestNetworkRequestWithDateQuery: NetworkRequest, NetworkRequestWithQuery {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let query: TestDateQuery
 }
 
 private struct TestNetworkRequestWithDateTimeQuery: NetworkRequest, NetworkRequestWithQuery {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let query: TestDateQuery
@@ -702,7 +702,7 @@ private struct TestNetworkRequestWithDateTimeQuery: NetworkRequest, NetworkReque
 }
 
 private struct TestNetworkRequestWithBody: NetworkRequestWithBody {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .post
     let headers: [HTTPHeader: String] = [:]
     let body: TestRequestBody
@@ -710,7 +710,7 @@ private struct TestNetworkRequestWithBody: NetworkRequestWithBody {
 }
 
 private struct TestNetworkRequestWithBodyAndEncoder: NetworkRequestWithBody {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .post
     let headers: [HTTPHeader: String] = [:]
     let body: TestRequestBody
@@ -719,7 +719,7 @@ private struct TestNetworkRequestWithBodyAndEncoder: NetworkRequestWithBody {
 }
 
 private struct TestRequestWithCustomContentType: NetworkRequestWithBody {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .post
     let headers: [HTTPHeader: String] = [:]
     let body: TestRequestBody
@@ -728,7 +728,7 @@ private struct TestRequestWithCustomContentType: NetworkRequestWithBody {
 }
 
 private struct TestNetworkRequestWithResponse: NetworkRequestWithResponse {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let httpBodyDecoder: DataDecoding? = nil
@@ -736,7 +736,7 @@ private struct TestNetworkRequestWithResponse: NetworkRequestWithResponse {
 }
 
 private struct TestNetworkRequestWithResponseAndDecoder: NetworkRequestWithResponse {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let httpBodyDecoder: DataDecoding?
@@ -745,14 +745,14 @@ private struct TestNetworkRequestWithResponseAndDecoder: NetworkRequestWithRespo
 }
 
 private struct TestNetworkRequestWithRequestInterceptor: NetworkRequest, NetworkRequestWithRequestInterceptor {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let requestInterceptor: NetworkRequestInterceptor
 }
 
 private struct TestRequestWithResponseInterceptor: NetworkRequest, NetworkRequestWithResponseInterceptor {
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
     let method: HTTPMethod = .get
     let headers: [HTTPHeader: String] = [:]
     let responseInterceptor: NetworkResponseInterceptor
@@ -825,6 +825,7 @@ private struct TestDataDecoder: DataDecoding {
         guard let body = TestResponseBody(id: "TestDataDecoder", success: true) as? T else {
             throw TestError.responseIsNotT
         }
+
         return body
     }
 }
@@ -833,4 +834,5 @@ private enum TestError: Error {
     case encodingFailed
     case responseIsNotT
 }
+
 // swiftlint:enable file_length

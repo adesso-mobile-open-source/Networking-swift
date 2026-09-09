@@ -18,31 +18,31 @@ import Testing
 // MARK: - NetworkErrorInterceptorResult Tests
 
 struct NetworkErrorInterceptorResultTests {
-    @Test("combine when using two results returns highest precedence",
-          arguments: [
-              (
+    @Test(
+        arguments: [
+            (
                 NetworkErrorInterceptorResult.defaultHandling,
                 NetworkErrorInterceptorResult.defaultHandling,
                 NetworkErrorInterceptorResult.defaultHandling
-              ),
-              (
+            ),
+            (
                 NetworkErrorInterceptorResult.retryRequest,
                 NetworkErrorInterceptorResult.defaultHandling,
                 NetworkErrorInterceptorResult.retryRequest
-              ),
-              (
+            ),
+            (
                 NetworkErrorInterceptorResult.defaultHandling,
                 NetworkErrorInterceptorResult.retryRequest,
                 NetworkErrorInterceptorResult.retryRequest
-              ),
-              (
+            ),
+            (
                 NetworkErrorInterceptorResult.retryRequest,
                 NetworkErrorInterceptorResult.retryRequest,
                 NetworkErrorInterceptorResult.retryRequest
-              )
-          ]
+            )
+        ]
     )
-    func combine_returnsHighestPrecedence(
+    func `combine when using two results returns highest precedence`(
         first: NetworkErrorInterceptorResult,
         second: NetworkErrorInterceptorResult,
         expected: NetworkErrorInterceptorResult
@@ -456,6 +456,7 @@ struct ResponseInterceptorErrorForwardingTests {
 }
 
 // MARK: - Per-Request Error Interceptor Tests
+
 @NetworkActor
 struct PerRequestErrorInterceptorTests {
     // MARK: - Helpers
@@ -610,4 +611,5 @@ private struct AnyNetworkRequestWithErrorInterceptor: NetworkRequestWithErrorInt
     let headers: [HTTPHeader: String] = [:]
     let errorInterceptor: NetworkErrorInterceptor
 }
+
 // swiftlint:enable file_length

@@ -29,7 +29,7 @@ public struct URLBaseMacro: ExpressionMacro {
     // swiftlint:disable:next cyclomatic_complexity
     public static func expansion(
         of node: some FreestandingMacroExpansionSyntax,
-        in context: some MacroExpansionContext
+        in _: some MacroExpansionContext
     ) throws -> ExprSyntax {
         guard
             let argument = node.arguments.first?.expression,
@@ -75,7 +75,7 @@ public struct URLBaseMacro: ExpressionMacro {
         }
 
         // No template parameters
-        guard !raw.contains("{") && !raw.contains("}") else {
+        guard !raw.contains("{"), !raw.contains("}") else {
             throw MacroExpansionErrorMessage(
                 "#URLBase must not contain template parameters — use #URLPath or @URLPathTemplate for dynamic segments"
             )

@@ -44,7 +44,7 @@ public struct URLBase: Sendable, Equatable {
     /// Unavailable. Use the `#URLBase` macro, which validates the scheme,
     /// host, and path at compile time.
     @available(*, unavailable, message: "Use #URLBase instead — it validates the scheme, host, and path at compile time.")
-    public init(_ value: String) {
+    public init(_: String) {
         fatalError("Use #URLBase instead — it validates the scheme, host, and path at compile time.")
     }
 
@@ -89,16 +89,13 @@ public struct ResolvedURL: Sendable, Equatable {
     /// result is always a valid URL. The force-unwrap is intentional and safe.
     public var url: URL { URL(string: rawValue)! }
 
-    internal init(rawValue: String) {
-        self.rawValue = rawValue
-    }
-
     /// Returns a new `ResolvedURL` with the given query items appended.
     ///
     /// - Parameter queryItems: The items to append. Passing an empty array
     ///   returns `self` unchanged (no trailing `?` is inserted).
     public func appending(queryItems: [URLQueryItem]) -> ResolvedURL {
         guard !queryItems.isEmpty else { return self }
+
         var components = URLComponents(string: rawValue)!
         components.queryItems = queryItems
         return ResolvedURL(rawValue: components.string!)

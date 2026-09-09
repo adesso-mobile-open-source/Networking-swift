@@ -62,6 +62,6 @@ public protocol PathParameterStringConvertible: Sendable {
 /// conforms to `CustomStringConvertible`. Adopt `PathParameterStringConvertible`
 /// on your type to opt in; `description` will be used unless you override
 /// `stringRepresentation` yourself.
-extension PathParameterStringConvertible where Self: CustomStringConvertible {
-    public var stringRepresentation: String { description }
+public extension PathParameterStringConvertible where Self: CustomStringConvertible {
+    var stringRepresentation: String { description }
 }

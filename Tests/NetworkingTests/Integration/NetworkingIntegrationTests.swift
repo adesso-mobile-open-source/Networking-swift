@@ -71,11 +71,12 @@ struct NetworkIntegrationTests {
                 let string: String
                 let int: Int
             }
+
             let method: HTTPMethod = .get
             let query: Query
         }
 
-        let query = Request.Query(string: .random(), int: Int.random(in: 0...100))
+        let query = Request.Query(string: .random(), int: Int.random(in: 0 ... 100))
         let request = Request(query: query, id: UUID())
         let urlRequest = request.makeURLRequest(environment: Self.environment, query: [
             .init(name: "int", value: "\(query.int)"),
@@ -120,11 +121,12 @@ struct NetworkIntegrationTests {
                 let name: String
                 let value: Int
             }
+
             let method: HTTPMethod = .post
             let body: RequestBody
         }
 
-        let requestBody = Request.RequestBody(name: .random(), value: Int.random(in: 0...100))
+        let requestBody = Request.RequestBody(name: .random(), value: Int.random(in: 0 ... 100))
         let request = Request(body: requestBody, id: UUID())
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .post), statusCode: 201)
         mock.register()
@@ -143,6 +145,7 @@ struct NetworkIntegrationTests {
                 let id: String
                 let success: Bool
             }
+
             let method: HTTPMethod = .post
         }
 
@@ -223,7 +226,7 @@ struct NetworkIntegrationTests {
         @URLPathTemplate("tests/{id}")
         struct Request: NetworkRequest {
             let method: HTTPMethod = .post
-            var allowedStatusCodes: Range<Int> { 200..<202 }
+            var allowedStatusCodes: Range<Int> { 200 ..< 202 }
         }
 
         let request = Request(id: UUID())
@@ -239,8 +242,8 @@ struct NetworkIntegrationTests {
         @URLPathTemplate("tests/{id}")
         struct Request: NetworkRequest {
             let method: HTTPMethod = .get
-            // Only accept 200, not 201
-            var allowedStatusCodes: Range<Int> { 200..<201 }
+            /// Only accept 200, not 201
+            var allowedStatusCodes: Range<Int> { 200 ..< 201 }
         }
 
         let request = Request(id: UUID())
@@ -386,6 +389,7 @@ struct NetworkIntegrationTests {
                 let id: String
                 let success: Bool
             }
+
             typealias ResponseBody = Body?
             let method: HTTPMethod = .get
         }
@@ -410,6 +414,7 @@ struct NetworkIntegrationTests {
                 let id: String
                 let success: Bool
             }
+
             typealias ResponseBody = Body?
             let method: HTTPMethod = .get
         }
@@ -436,7 +441,7 @@ struct NetworkIntegrationTests {
             let body: RequestBody
         }
 
-        let requestBody = Request.RequestBody(name: .random(), value: Int.random(in: 0...100))
+        let requestBody = Request.RequestBody(name: .random(), value: Int.random(in: 0 ... 100))
         let request = Request(body: requestBody, id: UUID())
         let responseBody = Request.Body(id: .random(), success: true)
         let responseData = try JSONEncoder().encode(responseBody)
@@ -460,7 +465,7 @@ struct NetworkIntegrationTests {
             let body: RequestBody
         }
 
-        let requestBody = Request.RequestBody(name: .random(), value: Int.random(in: 0...100))
+        let requestBody = Request.RequestBody(name: .random(), value: Int.random(in: 0 ... 100))
         let request = Request(body: requestBody, id: UUID())
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .post), statusCode: 200, data: Data())
         mock.register()

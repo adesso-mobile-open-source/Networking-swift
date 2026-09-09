@@ -18,7 +18,7 @@ import Foundation
 /// A minimal stub used exclusively by the `HTTPRequest(urlRequest:)` convenience initialiser.
 private struct StubNetworkRequest: NetworkRequest {
     let method: HTTPMethod = .get
-    let path: URLPath = URLPath(unsafeValue: "stub")
+    let path: URLPath = .init(unsafeValue: "stub")
 }
 
 private let stubEnvironment = NetworkEnvironment(base: URLBase(unsafeValue: "https://stub.test.com"))
