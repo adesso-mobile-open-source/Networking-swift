@@ -44,7 +44,9 @@ public struct URLBase: Sendable, Equatable {
     /// Unavailable. Use the `#URLBase` macro, which validates the scheme,
     /// host, and path at compile time.
     @available(*, unavailable, message: "Use #URLBase instead — it validates the scheme, host, and path at compile time.")
-    public init(_ value: String) { fatalError() }
+    public init(_ value: String) {
+        fatalError("Use #URLBase instead — it validates the scheme, host, and path at compile time.")
+    }
 
     // MARK: - Composition
 

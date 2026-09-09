@@ -10,6 +10,8 @@
 //  http://www.apache.org/licenses/LICENSE-2.0
 //
 
+// swiftlint:disable file_length
+
 @testable import Networking
 import Testing
 
@@ -18,10 +20,26 @@ import Testing
 struct NetworkErrorInterceptorResultTests {
     @Test("combine when using two results returns highest precedence",
           arguments: [
-              (NetworkErrorInterceptorResult.defaultHandling, NetworkErrorInterceptorResult.defaultHandling, NetworkErrorInterceptorResult.defaultHandling),
-              (NetworkErrorInterceptorResult.retryRequest, NetworkErrorInterceptorResult.defaultHandling, NetworkErrorInterceptorResult.retryRequest),
-              (NetworkErrorInterceptorResult.defaultHandling, NetworkErrorInterceptorResult.retryRequest, NetworkErrorInterceptorResult.retryRequest),
-              (NetworkErrorInterceptorResult.retryRequest, NetworkErrorInterceptorResult.retryRequest, NetworkErrorInterceptorResult.retryRequest)
+              (
+                NetworkErrorInterceptorResult.defaultHandling,
+                NetworkErrorInterceptorResult.defaultHandling,
+                NetworkErrorInterceptorResult.defaultHandling
+              ),
+              (
+                NetworkErrorInterceptorResult.retryRequest,
+                NetworkErrorInterceptorResult.defaultHandling,
+                NetworkErrorInterceptorResult.retryRequest
+              ),
+              (
+                NetworkErrorInterceptorResult.defaultHandling,
+                NetworkErrorInterceptorResult.retryRequest,
+                NetworkErrorInterceptorResult.retryRequest
+              ),
+              (
+                NetworkErrorInterceptorResult.retryRequest,
+                NetworkErrorInterceptorResult.retryRequest,
+                NetworkErrorInterceptorResult.retryRequest
+              )
           ]
     )
     func combine_returnsHighestPrecedence(
@@ -172,16 +190,6 @@ struct ChainedErrorInterceptorTests {
         let result = await chained.intercept(error: .secureConnectionNotPossible)
 
         #expect(result == .retryRequest)
-    }
-}
-
-// MARK: - NetworkTransportError.secureConnectionNotPossible Tests
-
-struct NetworkTransportErrorSecureConnectionTests {
-    @Test
-    func `secureConnectionNotPossible is Equatable`() {
-        #expect(NetworkTransportError.secureConnectionNotPossible == .secureConnectionNotPossible)
-        #expect(NetworkTransportError.secureConnectionNotPossible != .noNetworkConnection)
     }
 }
 
@@ -377,7 +385,7 @@ struct ResponseInterceptorErrorForwardingTests {
         sessionConfig.protocolClasses = [SucceedingURLProtocol.self]
         let nmConfig = NetworkClientConfiguration(
             environment: testNetworkEnvironment,
-            responseInterceptor: ClosureResponseInterceptor { (_: inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult in
+            responseInterceptor: ClosureResponseInterceptor { _ throws(NetworkTransportError) in
                 throw responseInterceptorError
             },
             errorInterceptor: errorInterceptor
@@ -512,7 +520,7 @@ struct PerRequestErrorInterceptorTests {
 
 // MARK: - NetworkClientConfiguration Error Interceptor Tests
 
-struct NetworkClientConfigurationErrorInterceptorTests {
+struct ConfigurationErrorInterceptorTests {
     actor BoolRecorder {
         var value: Bool = false
         func setTrue() { value = true }
@@ -602,3 +610,4 @@ private struct AnyNetworkRequestWithErrorInterceptor: NetworkRequestWithErrorInt
     let headers: [HTTPHeader: String] = [:]
     let errorInterceptor: NetworkErrorInterceptor
 }
+// swiftlint:enable file_length

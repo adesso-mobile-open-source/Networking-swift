@@ -10,6 +10,8 @@
 //  http://www.apache.org/licenses/LICENSE-2.0
 //
 
+// swiftlint:disable nesting type_body_length file_length
+
 import Mocker
 import Networking
 
@@ -33,7 +35,7 @@ import Networking
 struct NetworkIntegrationTests {
     static let environment = NetworkEnvironment(base: #URLBase("https://mylittlepony.io/api"))
 
-    let NetworkClient = {
+    let networkClient = {
         let config = URLSessionConfiguration.default
         config.protocolClasses = [MockingURLProtocol.self]
         return NetworkClientImpl(
@@ -55,7 +57,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         // should not throw
     }
 
@@ -82,7 +84,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: urlRequest, statusCode: 200)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         // should not throw
     }
 
@@ -104,7 +106,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: urlRequest, statusCode: 200)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         // should not throw
     }
 
@@ -127,7 +129,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .post), statusCode: 201)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         // should not throw
     }
 
@@ -150,7 +152,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .post), statusCode: 200, data: responseData)
         mock.register()
 
-        let response = try await NetworkClient.send(request: request)
+        let response = try await networkClient.send(request: request)
 
         #expect(response.id == responseBody.id)
         #expect(response.success == responseBody.success)
@@ -175,7 +177,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         // Verify the composed URL contains the UUID's standard string form
         let expectedURL = (Self.environment.base + request.path).url
         #expect(expectedURL.absoluteString.contains(id.description))
@@ -193,7 +195,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         let expectedURL = (Self.environment.base + request.path).url
         #expect(expectedURL.absoluteString.hasSuffix("/tests/42"))
     }
@@ -212,7 +214,7 @@ struct NetworkIntegrationTests {
         mock.register()
 
         await #expect(throws: NetworkSendError.self) {
-            try await NetworkClient.send(request: request)
+            try await networkClient.send(request: request)
         }
     }
 
@@ -229,7 +231,7 @@ struct NetworkIntegrationTests {
         mock.register()
 
         // Should not throw — 201 is within 200..<202
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
     }
 
     @Test
@@ -246,7 +248,7 @@ struct NetworkIntegrationTests {
         mock.register()
 
         await #expect(throws: NetworkSendError.self) {
-            try await NetworkClient.send(request: request)
+            try await networkClient.send(request: request)
         }
     }
 
@@ -269,7 +271,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: urlRequest, statusCode: 200)
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
         // should not throw — Mocker validates the custom header was set
     }
 
@@ -286,14 +288,14 @@ struct NetworkIntegrationTests {
         let wasIntercepted = ActorBox(false)
         let interceptor = ClosureResponseInterceptor { response in
             await wasIntercepted.set(true)
-            response.data = "modified".data(using: .utf8)!
+            response.data = Data("modified".utf8)
             return .defaultHandling
         }
         let request = Request(responseInterceptor: interceptor, id: UUID())
-        let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200, data: "original".data(using: .utf8)!)
+        let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200, data: Data("original".utf8))
         mock.register()
 
-        try await NetworkClient.send(request: request)
+        try await networkClient.send(request: request)
 
         #expect(await wasIntercepted.get())
     }
@@ -394,14 +396,14 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200, data: responseData)
         mock.register()
 
-        let response = try await NetworkClient.send(request: request)
+        let response = try await networkClient.send(request: request)
 
         #expect(response.body?.id == responseBody.id)
         #expect(response.body?.success == responseBody.success)
     }
 
     @Test
-    func `network request GET when no query no headers no request body with optional response body returns nil when no data`() async throws {
+    func `network request GET when no query no headers no request body with opt response body returns nil when no data`() async throws {
         @URLPathTemplate("tests/{id}")
         struct Request: NetworkRequest, NetworkRequestWithResponse {
             struct Body: Codable {
@@ -416,7 +418,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment), statusCode: 200, data: Data())
         mock.register()
 
-        let response = try await NetworkClient.send(request: request)
+        let response = try await networkClient.send(request: request)
 
         #expect(response.body == nil)
     }
@@ -441,14 +443,14 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .post), statusCode: 200, data: responseData)
         mock.register()
 
-        let response = try await NetworkClient.send(request: request)
+        let response = try await networkClient.send(request: request)
 
         #expect(response.body?.id == responseBody.id)
         #expect(response.body?.success == responseBody.success)
     }
 
     @Test
-    func `network request POST when no query no headers with request body with optional response body returns nil when no data`() async throws {
+    func `network request POST when no query no headers with request body with opt response body returns nil when no data`() async throws {
         @URLPathTemplate("tests/{id}")
         struct Request: NetworkRequest, NetworkRequestWithResponse, NetworkRequestWithBody {
             struct RequestBody: Encodable { let name: String; let value: Int }
@@ -463,7 +465,7 @@ struct NetworkIntegrationTests {
         let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .post), statusCode: 200, data: Data())
         mock.register()
 
-        let response = try await NetworkClient.send(request: request)
+        let response = try await networkClient.send(request: request)
 
         #expect(response.body == nil)
     }
@@ -480,10 +482,14 @@ struct NetworkIntegrationTests {
 
         let request = Request(id: UUID())
         let responseHeaders = ["date": "01.01.2001, 08:00:00"]
-        let mock = Mock(request: request.makeURLRequest(environment: Self.environment, method: .head), statusCode: 200, additionalHeaders: responseHeaders)
+        let mock = Mock(
+            request: request.makeURLRequest(environment: Self.environment, method: .head),
+            statusCode: 200,
+            additionalHeaders: responseHeaders
+        )
         mock.register()
 
-        let response = try await NetworkClient.send(request: request)
+        let response = try await networkClient.send(request: request)
 
         #expect(response.count == 1)
         #expect(response["date"] == responseHeaders["date"])
@@ -502,10 +508,12 @@ struct NetworkIntegrationTests {
         mock.register()
 
         do {
-            _ = try await NetworkClient.send(request: request)
+            _ = try await networkClient.send(request: request)
             Issue.record("Expected NetworkSendHeaderResponseError.headerFieldsMissing to be thrown")
         } catch {
             #expect(error == .headerFieldsMissing)
         }
     }
 }
+
+// swiftlint:enable nesting type_body_length file_length

@@ -72,10 +72,10 @@ public final class NetworkClientImpl: NetworkClient {
 // MARK: - NetworkRequestWithQuery
 
 extension NetworkClientImpl {
+    // swiftlint:disable:next discouraged_optional_collection
     /// Produces query items for a given request.
     /// - Parameter request: The configured NetworkRequest object.
     /// - Returns: A list of query items or `nil`, if no query items are found.
-    // swiftlint:disable:next discouraged_optional_collection
     func queryItems(request: any NetworkRequest) throws(RequestBuildingFailure) -> [URLQueryItem]? {
         guard let requestWithQuery = request as? (any NetworkRequestWithQuery) else {
             // We need to return nil here, otherwise URLRequest will

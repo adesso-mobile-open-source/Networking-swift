@@ -19,15 +19,15 @@ let package = Package(
     platforms: [.macOS(.v13), .iOS(.v16)],
     dependencies: [
         // Local reference to the Networking library in the parent directory.
-        .package(path: "../"),
+        .package(path: "../")
     ],
     targets: [
         .executableTarget(
             name: "Example",
             dependencies: [
-                .product(name: "Networking", package: "Networking"),
+                .product(name: "Networking", package: "Networking")
             ],
             path: "Sources/Example"
-        ),
+        )
     ]
 )

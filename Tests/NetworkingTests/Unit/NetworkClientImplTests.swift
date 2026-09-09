@@ -10,6 +10,8 @@
 //  http://www.apache.org/licenses/LICENSE-2.0
 //
 
+// swiftlint:disable file_length
+
 @testable import Networking
 import Testing
 
@@ -20,18 +22,18 @@ struct NetworkClientImplTests {
     @Test
     func `init when Using Default Initializer then Configures Ephemeral URLSession`() async {
         // Given / When
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         // Then
-        let policy = NetworkClient.urlSession.configuration.requestCachePolicy
+        let policy = networkClient.urlSession.configuration.requestCachePolicy
         #expect(policy == URLSessionConfiguration.ephemeral.requestCachePolicy)
     }
 
     @Test
     func `init when Provided Environment then Sets Environment Correctly`() async {
         // Given / When
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         // Then
-        let base = NetworkClient.configuration.environment.base
+        let base = networkClient.configuration.environment.base
         #expect(base == testNetworkEnvironment.base)
     }
 
@@ -40,10 +42,10 @@ struct NetworkClientImplTests {
         // Given
         let urlSession = URLSession.shared
         // When
-        let NetworkClient = NetworkClientImpl(urlSession: urlSession, environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(urlSession: urlSession, environment: testNetworkEnvironment)
         // Then
-        #expect(NetworkClient.urlSession === urlSession)
-        #expect(NetworkClient.configuration.environment.base == testNetworkEnvironment.base)
+        #expect(networkClient.urlSession === urlSession)
+        #expect(networkClient.configuration.environment.base == testNetworkEnvironment.base)
     }
 
     // MARK: - Query Items Tests
@@ -51,10 +53,10 @@ struct NetworkClientImplTests {
     @Test
     func `queryItems when RequestHasNoQuery then ReturnsNil`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequest()
         // When
-        let items = try NetworkClient.queryItems(request: request)
+        let items = try networkClient.queryItems(request: request)
         // Then
         #expect(items == nil)
     }
@@ -62,10 +64,10 @@ struct NetworkClientImplTests {
     @Test
     func `queryItems when RequestHasQuery then ReturnsCorrectItems`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequestWithQuery(query: .init(name: "test", value: 42, flag: true))
         // When
-        let items = try NetworkClient.queryItems(request: request)
+        let items = try networkClient.queryItems(request: request)
         // Then
         #expect(items?.count == 3)
         #expect(items?.contains(URLQueryItem(name: "flag", value: "true")) == true)
@@ -76,10 +78,10 @@ struct NetworkClientImplTests {
     @Test
     func `queryItems when RequestHasEmptyQuery then ReturnsNil`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequestWithEmptyQuery(query: EmptyQuery())
         // When
-        let items = try NetworkClient.queryItems(request: request)
+        let items = try networkClient.queryItems(request: request)
         // Then
         #expect(items == nil)
     }
@@ -87,14 +89,14 @@ struct NetworkClientImplTests {
     @Test
     func `queryItems when RequestHasDateQuery then UsesDefaultDateOnlyStrategy`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .current
         let date = try #require(calendar.date(from: DateComponents(year: 2026, month: 1, day: 31, hour: 12, minute: 45, second: 6)))
         let request = TestNetworkRequestWithDateQuery(query: .init(date: date))
 
         // When
-        let items = try NetworkClient.queryItems(request: request)
+        let items = try networkClient.queryItems(request: request)
 
         // Then
         #expect(items == [URLQueryItem(name: "date", value: "2026-01-31")])
@@ -103,14 +105,14 @@ struct NetworkClientImplTests {
     @Test
     func `queryItems when RequestOverridesDateEncodingStrategy then UsesDateTimeWithOffset`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .current
         let date = try #require(calendar.date(from: DateComponents(year: 2026, month: 1, day: 31, hour: 12, minute: 45, second: 6)))
         let request = TestNetworkRequestWithDateTimeQuery(query: .init(date: date))
 
         // When
-        let items = try NetworkClient.queryItems(request: request)
+        let items = try networkClient.queryItems(request: request)
 
         // Then
         #expect(items == [URLQueryItem(name: "date", value: expectedISO8601DateTimeWithOffset(for: date))])
@@ -121,10 +123,10 @@ struct NetworkClientImplTests {
     @Test
     func `body when UsingDefaultEncoder then UsesJSONEncoder`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequestWithBody(body: .init(id: "123", name: "test"))
         // When
-        let data = try NetworkClient.body(request: request)
+        let data = try networkClient.body(request: request)
         // Then
         let decoded = try JSONDecoder().decode(TestRequestBody.self, from: data)
         #expect(decoded.id == "123")
@@ -134,10 +136,10 @@ struct NetworkClientImplTests {
     @Test
     func `body when UsingCustomEncoder then UsesCustomEncoder`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequestWithBodyAndEncoder(body: .init(id: "456", name: "custom"), encoder: TestDataEncoder())
         // When
-        let data = try NetworkClient.body(request: request)
+        let data = try networkClient.body(request: request)
         // Then
         #expect(String(data: data, encoding: .utf8) == "TestDataEncoder")
     }
@@ -145,11 +147,11 @@ struct NetworkClientImplTests {
     @Test
     func `body when EncodingFails then ThrowsRequestBuildingFailure`() async {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequestWithBodyAndEncoder(body: .init(id: "789", name: "failing"), encoder: FailingDataEncoder())
         // When / Then
         do {
-            _ = try NetworkClient.body(request: request)
+            _ = try networkClient.body(request: request)
             Issue.record("Expected RequestBuildingFailure.cannotEncodeRequestBody to be thrown")
         } catch {
             if case .cannotEncodeRequestBody = error {
@@ -165,10 +167,10 @@ struct NetworkClientImplTests {
     @Test
     func `makeHTTPRequest when BodyPresent then SetsDefaultContentTypeHeader`() async throws {
         // Given
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestNetworkRequestWithBody(body: .init(id: "abc", name: "contentType"))
         // When
-        let urlRequest = try NetworkClient.makeHTTPRequest(requestConfiguration: request).urlRequest
+        let urlRequest = try networkClient.makeHTTPRequest(requestConfiguration: request).urlRequest
         // Then
         #expect(urlRequest.value(forHTTPHeaderField: "Content-Type") == "application/json")
     }
@@ -177,13 +179,13 @@ struct NetworkClientImplTests {
     func `makeHTTPRequest when BodyWithCustomContentType then SetsCustomContentTypeHeader`() async throws {
         // Given
         let custom = "application/x-test-\(UUID().uuidString)"
-        let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
+        let networkClient = NetworkClientImpl(environment: testNetworkEnvironment)
         let request = TestRequestWithCustomContentType(
             body: .init(id: "def", name: "custom"),
             contentType: .init(contentTypeString: custom)
         )
         // When
-        let urlRequest = try NetworkClient.makeHTTPRequest(requestConfiguration: request).urlRequest
+        let urlRequest = try networkClient.makeHTTPRequest(requestConfiguration: request).urlRequest
         // Then
         #expect(urlRequest.value(forHTTPHeaderField: "Content-Type") == custom)
     }
@@ -279,7 +281,7 @@ extension NetworkClientImplTests {
     func `decodeResponse when UsingCustomDecoder then UsesCustomDecoder`() async throws {
         // Given
         let nm = NetworkClientImpl(environment: testNetworkEnvironment)
-        let httpResponse = generateHTTPResponse(data: "ignored".data(using: .utf8)!)
+        let httpResponse = generateHTTPResponse(data: Data("ignored".utf8))
         let request = TestNetworkRequestWithResponseAndDecoder(decoder: TestDataDecoder())
         // When
         let decoded = try nm.decodeResponse(request: request, httpResponse: httpResponse)
@@ -439,7 +441,10 @@ extension NetworkClientImplTests {
 
     @Test
     func `makeHTTPRequest when UsingDifferentEnvironment then UsesEnvironmentBaseURL`() async throws {
-        let custom = NetworkEnvironment(base: URLBase(unsafeValue: "https://staging.example.com"), defaultHeaders: ["Environment": "staging"])
+        let custom = NetworkEnvironment(
+            base: URLBase(unsafeValue: "https://staging.example.com"),
+            defaultHeaders: ["Environment": "staging"]
+        )
         let nm = NetworkClientImpl(environment: custom)
         let request = TestNetworkRequestWithBaseURL(path: "test", method: .get)
         let urlRequest = try nm.makeHTTPRequest(requestConfiguration: request).urlRequest
@@ -598,7 +603,10 @@ extension NetworkClientImplTests {
     @Test
     func `makeHTTPRequest when DifferentEnvironment then InjectsCorrectEnvironment`() async throws {
         // Given
-        let customEnv = NetworkEnvironment(base: URLBase(unsafeValue: "https://staging.example.com"), defaultHeaders: ["Environment": "staging"])
+        let customEnv = NetworkEnvironment(
+            base: URLBase(unsafeValue: "https://staging.example.com"),
+            defaultHeaders: ["Environment": "staging"]
+        )
         let nm = NetworkClientImpl(environment: customEnv)
         let request = TestNetworkRequestWithBaseURL(path: "test", method: .get)
         // When
@@ -612,10 +620,15 @@ extension NetworkClientImplTests {
 // MARK: - Test Helpers
 
 private extension NetworkClientImplTests {
-    func generateHTTPResponse(data: Data = "test".data(using: .utf8)!) -> HTTPResponse {
+    func generateHTTPResponse(data: Data = Data("test".utf8)) -> HTTPResponse {
         let urlRequest = URLRequest(url: URL(string: "https://test.com")!)
         let httpRequest = HTTPRequest(urlRequest: urlRequest)
-        let urlResponse = HTTPURLResponse(url: URL(string: "https://test.com")!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": "application/json"])!
+        let urlResponse = HTTPURLResponse(
+            url: URL(string: "https://test.com")!,
+            statusCode: 200,
+            httpVersion: "HTTP/1.1",
+            headerFields: ["Content-Type": "application/json"]
+        )!
         return HTTPResponse(request: httpRequest, urlResponse: urlResponse, data: data)
     }
 
@@ -683,46 +696,76 @@ private struct TestNetworkRequestWithDateTimeQuery: NetworkRequest, NetworkReque
 }
 
 private struct TestNetworkRequestWithBody: NetworkRequestWithBody {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .post; let headers: [HTTPHeader: String] = [:]; let body: TestRequestBody; let httpBodyEncoder: DataEncoding? = nil
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .post
+    let headers: [HTTPHeader: String] = [:]
+    let body: TestRequestBody
+    let httpBodyEncoder: DataEncoding? = nil
 }
 
 private struct TestNetworkRequestWithBodyAndEncoder: NetworkRequestWithBody {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .post; let headers: [HTTPHeader: String] = [:]; let body: TestRequestBody; let httpBodyEncoder: DataEncoding?
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .post
+    let headers: [HTTPHeader: String] = [:]
+    let body: TestRequestBody
+    let httpBodyEncoder: DataEncoding?
     init(body: TestRequestBody, encoder: DataEncoding) { self.body = body; httpBodyEncoder = encoder }
 }
 
 private struct TestRequestWithCustomContentType: NetworkRequestWithBody {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .post; let headers: [HTTPHeader: String] = [:]; let body: TestRequestBody; let contentType: ContentType; var httpBodyEncoder: DataEncoding? { nil }
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .post
+    let headers: [HTTPHeader: String] = [:]
+    let body: TestRequestBody
+    let contentType: ContentType
+    var httpBodyEncoder: DataEncoding? { nil }
 }
 
 private struct TestNetworkRequestWithResponse: NetworkRequestWithResponse {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let httpBodyDecoder: DataDecoding? = nil
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .get
+    let headers: [HTTPHeader: String] = [:]
+    let httpBodyDecoder: DataDecoding? = nil
     typealias ResponseBody = TestResponseBody
 }
 
 private struct TestNetworkRequestWithResponseAndDecoder: NetworkRequestWithResponse {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let httpBodyDecoder: DataDecoding?
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .get
+    let headers: [HTTPHeader: String] = [:]
+    let httpBodyDecoder: DataDecoding?
     typealias ResponseBody = TestResponseBody
     init(decoder: DataDecoding) { httpBodyDecoder = decoder }
 }
 
 private struct TestNetworkRequestWithRequestInterceptor: NetworkRequest, NetworkRequestWithRequestInterceptor {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let requestInterceptor: NetworkRequestInterceptor
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .get
+    let headers: [HTTPHeader: String] = [:]
+    let requestInterceptor: NetworkRequestInterceptor
 }
 
 private struct TestRequestWithResponseInterceptor: NetworkRequest, NetworkRequestWithResponseInterceptor {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let responseInterceptor: NetworkResponseInterceptor
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .get
+    let headers: [HTTPHeader: String] = [:]
+    let responseInterceptor: NetworkResponseInterceptor
 }
 
 private struct TestNetworkRequestWithBaseURL: NetworkRequest {
-    let path: URLPath; let method: HTTPMethod; let headers: [HTTPHeader: String]
+    let path: URLPath
+    let method: HTTPMethod
+    let headers: [HTTPHeader: String]
     init(path: String, method: HTTPMethod = .get, headers: [HTTPHeader: String] = [:]) {
         self.path = URLPath(unsafeValue: path); self.method = method; self.headers = headers
     }
 }
 
 private struct TestNetworkRequestWithBaseURLAndQuery: NetworkRequest, NetworkRequestWithQuery {
-    let path: URLPath; let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let query: TestQuery
+    let path: URLPath
+    let method: HTTPMethod = .get
+    let headers: [HTTPHeader: String] = [:]
+    let query: TestQuery
     init(path: String, query: TestQuery) { self.path = URLPath(unsafeValue: path); self.query = query }
 }
 
@@ -733,7 +776,12 @@ private struct TestNetworkRequestWithTimeout: NetworkRequest, NetworkRequestWith
     let method: HTTPMethod
     let headers: [HTTPHeader: String]
     let timeout: TimeInterval
-    init(path: URLPath = URLPath(unsafeValue: "stub"), method: HTTPMethod = .get, headers: [HTTPHeader: String] = [:], timeout: TimeInterval) {
+    init(
+        path: URLPath = URLPath(unsafeValue: "stub"),
+        method: HTTPMethod = .get,
+        headers: [HTTPHeader: String] = [:],
+        timeout: TimeInterval
+    ) {
         self.path = path; self.method = method; self.headers = headers; self.timeout = timeout
     }
 }
@@ -753,7 +801,10 @@ private struct TestDateQuery: Encodable { let date: Date }
 private struct EmptyQuery: Encodable { }
 private struct TestRequestBody: Codable { let id: String; let name: String }
 private struct TestResponseBody: Codable { let id: String; let success: Bool }
-let testNetworkEnvironment: NetworkEnvironment = .init(base: URLBase(unsafeValue: "https://api.test.com"), defaultHeaders: ["Content-Type": "application/json", "X-API-Key": "test-key"])
+let testNetworkEnvironment: NetworkEnvironment = .init(
+    base: URLBase(unsafeValue: "https://api.test.com"),
+    defaultHeaders: ["Content-Type": "application/json", "X-API-Key": "test-key"]
+)
 
 private struct TestDataEncoder: DataEncoding {
     func encode(_: some Encodable) throws -> Data { Data("TestDataEncoder".utf8) }
@@ -764,7 +815,16 @@ private struct FailingDataEncoder: DataEncoding {
 }
 
 private struct TestDataDecoder: DataDecoding {
-    func decode<T: Decodable>(_: T.Type, from _: Data) throws -> T { TestResponseBody(id: "TestDataDecoder", success: true) as! T }
+    func decode<T: Decodable>(_: T.Type, from _: Data) throws -> T {
+        guard let body = TestResponseBody(id: "TestDataDecoder", success: true) as? T else {
+            throw TestError.responseIsNotT
+        }
+        return body
+    }
 }
 
-private enum TestError: Error { case encodingFailed }
+private enum TestError: Error {
+    case encodingFailed
+    case responseIsNotT
+}
+// swiftlint:enable file_length

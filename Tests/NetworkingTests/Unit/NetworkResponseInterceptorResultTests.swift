@@ -15,10 +15,26 @@
 struct NetworkResponseInterceptorResultTests {
     @Test("combine when using two results returns highest precedence",
           arguments: [
-              (NetworkResponseInterceptorResult.defaultHandling, NetworkResponseInterceptorResult.defaultHandling, NetworkResponseInterceptorResult.defaultHandling),
-              (NetworkResponseInterceptorResult.retryRequest, NetworkResponseInterceptorResult.defaultHandling, NetworkResponseInterceptorResult.retryRequest),
-              (NetworkResponseInterceptorResult.defaultHandling, NetworkResponseInterceptorResult.retryRequest, NetworkResponseInterceptorResult.retryRequest),
-              (NetworkResponseInterceptorResult.retryRequest, NetworkResponseInterceptorResult.retryRequest, NetworkResponseInterceptorResult.retryRequest),
+              (
+                NetworkResponseInterceptorResult.defaultHandling,
+                NetworkResponseInterceptorResult.defaultHandling,
+                NetworkResponseInterceptorResult.defaultHandling
+              ),
+              (
+                NetworkResponseInterceptorResult.retryRequest,
+                NetworkResponseInterceptorResult.defaultHandling,
+                NetworkResponseInterceptorResult.retryRequest
+              ),
+              (
+                NetworkResponseInterceptorResult.defaultHandling,
+                NetworkResponseInterceptorResult.retryRequest,
+                NetworkResponseInterceptorResult.retryRequest
+              ),
+              (
+                NetworkResponseInterceptorResult.retryRequest,
+                NetworkResponseInterceptorResult.retryRequest,
+                NetworkResponseInterceptorResult.retryRequest
+              )
           ]
     )
     func combine_whenUsingTwoResults_returnsHighestPrecedence(

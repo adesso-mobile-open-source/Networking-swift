@@ -12,6 +12,7 @@
 
 @testable import Networking
 
+// swiftlint:disable:next type_name
 struct ValidateHTTPStatusResponseInterceptorTests {
     @Test("intercept when 2xx status code returns default handling", arguments: [200, 201, 204, 226, 299])
     func intercept_when2xxStatusCode_returnsDefaultHandling(statusCode: Int) async throws {

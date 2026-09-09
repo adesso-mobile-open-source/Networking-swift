@@ -10,6 +10,8 @@
 //  http://www.apache.org/licenses/LICENSE-2.0
 //
 
+// swiftlint:disable file_length type_body_length type_name
+
 import Foundation
 import Testing
 
@@ -484,3 +486,5 @@ private struct TestNestedDateContainer: Codable {
 
     let event: Event
 }
+
+// swiftlint:enable file_length type_body_length type_name

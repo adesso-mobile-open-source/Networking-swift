@@ -217,7 +217,10 @@ struct ExampleApp {
             print("  (unexpected success)")
         } catch let NetworkSendResponseError.transport(.errorStatusCode(code, _)) {
             print("  Caught expected error: HTTP \(code)")
-            print("  → The library throws a typed, overload-specific error (NetworkSendResponseError) — no stringly-typed error handling needed.")
+            print(
+                "  → The library throws a typed, overload-specific error (NetworkSendResponseError)" +
+                " — no stringly-typed error handling needed."
+            )
         } catch {
             print("  Caught error: \(error)")
         }

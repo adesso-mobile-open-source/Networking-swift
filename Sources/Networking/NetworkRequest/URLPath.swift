@@ -39,5 +39,7 @@ public struct URLPath: Sendable, Equatable {
     @available(
         *, unavailable, message: "Use #URLPath for static paths or @URLPathTemplate for dynamic paths — both validate at compile time."
     )
-    public init(_ value: String) { fatalError() }
+    public init(_ value: String) {
+        fatalError("Use #URLPath for static paths or @URLPathTemplate for dynamic paths — both validate at compile time.")
+    }
 }
