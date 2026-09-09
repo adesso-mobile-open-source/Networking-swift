@@ -178,7 +178,7 @@ struct NetworkClientImplTests {
         // Given
         let custom = "application/x-test-\(UUID().uuidString)"
         let NetworkClient = NetworkClientImpl(environment: testNetworkEnvironment)
-        let request = TestNetworkRequestWithBodyAndCustomContentType(
+        let request = TestRequestWithCustomContentType(
             body: .init(id: "def", name: "custom"),
             contentType: .init(contentTypeString: custom)
         )
@@ -249,7 +249,7 @@ struct NetworkClientImplTests {
         let custom = ClosureResponseInterceptor { _ in .retryRequest }
         let nm = NetworkClientImpl(configuration: .init(environment: testNetworkEnvironment, responseInterceptor: defaultInterceptor))
         var httpResponse = generateHTTPResponse()
-        let request = TestNetworkRequestWithResponseInterceptor(responseInterceptor: custom)
+        let request = TestRequestWithResponseInterceptor(responseInterceptor: custom)
         // When
         let result = try await nm.intercept(request: request, httpResponse: &httpResponse)
         // Then
@@ -371,8 +371,6 @@ struct NetworkClientImplTests {
         #expect(request.allowedStatusCodes == 200..<202)
     }
 
-
-
     // MARK: - Environment Based URL Composition
 
     @Test
@@ -445,7 +443,12 @@ struct NetworkClientImplTests {
         #expect(urlRequest.url?.absoluteString == "https://staging.example.com/test")
         #expect(urlRequest.value(forHTTPHeaderField: "Environment") == "staging")
     }
+}
 
+// MARK: - NetworkRequestWithTimeout Tests
+
+@NetworkActor
+extension NetworkClientImplTests {
     // MARK: - NetworkRequestWithTimeout Tests
 
     @Test
@@ -685,7 +688,7 @@ private struct TestNetworkRequestWithBodyAndEncoder: NetworkRequestWithBody {
     init(body: TestRequestBody, encoder: DataEncoding) { self.body = body; httpBodyEncoder = encoder }
 }
 
-private struct TestNetworkRequestWithBodyAndCustomContentType: NetworkRequestWithBody {
+private struct TestRequestWithCustomContentType: NetworkRequestWithBody {
     let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .post; let headers: [HTTPHeader: String] = [:]; let body: TestRequestBody; let contentType: ContentType; var httpBodyEncoder: DataEncoding? { nil }
 }
 
@@ -704,7 +707,7 @@ private struct TestNetworkRequestWithRequestInterceptor: NetworkRequest, Network
     let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let requestInterceptor: NetworkRequestInterceptor
 }
 
-private struct TestNetworkRequestWithResponseInterceptor: NetworkRequest, NetworkRequestWithResponseInterceptor {
+private struct TestRequestWithResponseInterceptor: NetworkRequest, NetworkRequestWithResponseInterceptor {
     let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let responseInterceptor: NetworkResponseInterceptor
 }
 

@@ -13,7 +13,11 @@
 @testable import Networking
 
 struct ClosureResponseInterceptorTests {
-    @Test("intercept when intercepted modifies HTTP response and returns result", arguments: [Data("Test".utf8), Data("AnotherTest".utf8)], [NetworkResponseInterceptorResult.defaultHandling, NetworkResponseInterceptorResult.retryRequest])
+    @Test(
+        "intercept when intercepted modifies HTTP response and returns result",
+        arguments: [Data("Test".utf8), Data("AnotherTest".utf8)],
+        [NetworkResponseInterceptorResult.defaultHandling, NetworkResponseInterceptorResult.retryRequest]
+    )
     func intercept_whenIntercepted_modifiesHTTPResponse_andReturnsResult(
         responseData: Data,
         interceptResult: NetworkResponseInterceptorResult

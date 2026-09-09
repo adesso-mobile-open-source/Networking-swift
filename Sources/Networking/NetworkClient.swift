@@ -45,8 +45,10 @@ public struct NetworkClientConfiguration: Sendable {
     ///   - httpBodyEncoder: The default encoder for HTTP bodies. Default is `JSONEncoder()`.
     ///   - httpBodyDecoder: The default decoder for HTTP bodies. Default is `JSONDecoder()`.
     ///   - requestInterceptor: The default request interceptor. Default is an empty interceptor.
-    ///   - responseInterceptor: The default response interceptor. Default is a no-op (status validation is handled by `NetworkClient` using `NetworkRequest.allowedStatusCodes`).
-    ///   - errorInterceptor: The default error interceptor for TLS/connection errors and response-interceptor failures. Default is a no-op.
+    ///   - responseInterceptor: The default response interceptor. Default is a no-op
+    ///     (status validation is handled by `NetworkClient` using `NetworkRequest.allowedStatusCodes`).
+    ///   - errorInterceptor: The default error interceptor for TLS/connection errors and response-interceptor failures.
+    ///     Default is a no-op.
     ///   - sessionConfiguration: The URLSession configuration. Default is an ephemeral configuration with a 20-second timeout.
     public init(
         environment: NetworkEnvironment,
@@ -73,15 +75,17 @@ public struct NetworkClientConfiguration: Sendable {
             self.sessionConfiguration = defaultConfiguration
         }
     }
-    
+
     /// Initializes a new instance of `NetworkClientConfiguration`.
     /// - Parameters:
     ///   - environment: The network environment that provides the base URL and default headers for all requests.
     ///   - httpBodyEncoder: The default encoder for HTTP bodies. Default is `JSONEncoder()`.
     ///   - httpBodyDecoder: The default decoder for HTTP bodies. Default is `JSONDecoder()`.
     ///   - requestInterceptor: The default request interceptor. Default is an empty interceptor.
-    ///   - responseInterceptor: The default response interceptor. Default is a no-op (status validation is handled by `NetworkClient` using `NetworkRequest.allowedStatusCodes`).
-    ///   - errorInterceptor: The default error interceptor for TLS/connection errors and response-interceptor failures. Default is a no-op.
+    ///   - responseInterceptor: The default response interceptor. Default is a no-op
+    ///     (status validation is handled by `NetworkClient` using `NetworkRequest.allowedStatusCodes`).
+    ///   - errorInterceptor: The default error interceptor for TLS/connection errors and response-interceptor failures.
+    ///     Default is a no-op.
     ///   - sessionConfiguration: The URLSession configuration. Default is an ephemeral configuration with a 20-second timeout.
     public init(
         environment: NetworkEnvironment,
@@ -119,7 +123,7 @@ public protocol NetworkClient: AnyObject, Sendable {
 
     /// Gets or sets the current `NetworkClientConfiguration`.
     var configuration: NetworkClientConfiguration { get set }
-    
+
     /// Gets or sets the current `NetworkEnvironment`. Setting it mutates the
     /// environment within the `configuration`.
     var environment: NetworkEnvironment { get set }
@@ -141,7 +145,9 @@ public protocol NetworkClient: AnyObject, Sendable {
     /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`.
     /// May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse` to be sent.
-    func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse
+    func send<R>(
+        request requestConfiguration: R
+    ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse
 
     /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`and
     /// contains a request body. May throw in case the request was not successful.
@@ -157,7 +163,7 @@ public protocol NetworkClient: AnyObject, Sendable {
     ///
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse` with optional `ResponseBody` to be sent.
     func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == Optional<T>
+    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T?
 
     /// Sends a preconfigured instance of a `NetworkRequest` with both a request body and an optional response body.
     /// Returns `NetworkResponse<ResponseBody?>` where the body is `nil` if the server returned an empty response.
@@ -167,10 +173,13 @@ public protocol NetworkClient: AnyObject, Sendable {
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse & NetworkRequestWithBody` with optional `ResponseBody` to be sent.
     func send<R, T>(
         request requestConfiguration: R
-    ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == Optional<T>
+    ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody>
+    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T?
 
     /// Sends a network request and returns specific headers from the response.
     /// - Parameter requestConfiguration: The request configuration specifying which headers are required.
     /// - Returns: A dictionary containing the required header field names and their values.
-    func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError) -> [String: String]
+    func send(
+        request requestConfiguration: some NetworkRequestWithHeaderResponse
+    ) async throws(NetworkSendHeaderResponseError) -> [String: String]
 }

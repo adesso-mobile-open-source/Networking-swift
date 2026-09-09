@@ -22,12 +22,12 @@ let package = Package(
         .library(
             name: "Networking",
             targets: ["Networking"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-syntax.git", exact: "603.0.1"),
         .package(url: "https://github.com/WeTransfer/Mocker.git", from: "3.0.2"),
-        .package(url: "https://github.com/almazrafi/DictionaryCoder.git", from: "1.3.0"),
+        .package(url: "https://github.com/almazrafi/DictionaryCoder.git", from: "1.3.0")
     ],
     targets: [
         .macro(
@@ -51,8 +51,8 @@ let package = Package(
             dependencies: [
                 "NetworkingMacros",
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
             ]
-        ),
+        )
     ]
 )

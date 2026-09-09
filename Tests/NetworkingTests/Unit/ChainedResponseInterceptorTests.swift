@@ -182,15 +182,15 @@ struct ChainedResponseInterceptorTests {
 
         let interceptors = [
             ClosureResponseInterceptor { httpResponse in
-                httpResponse.data.append("1".data(using: .utf8)!)
+                httpResponse.data.append(Data("1".utf8))
                 return .defaultHandling
             },
             ClosureResponseInterceptor { httpResponse in
-                httpResponse.data.append("2".data(using: .utf8)!)
+                httpResponse.data.append(Data("2".utf8))
                 return .defaultHandling
             },
             ClosureResponseInterceptor { httpResponse in
-                httpResponse.data.append("3".data(using: .utf8)!)
+                httpResponse.data.append(Data("3".utf8))
                 return .retryRequest
             }
         ]
@@ -213,7 +213,8 @@ struct ChainedResponseInterceptorTests {
 
         struct TestError: Error, Equatable { }
 
-        let firstInterceptor = ClosureResponseInterceptor { (_: inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult in
+        let firstInterceptor = ClosureResponseInterceptor { (_: inout HTTPResponse) async throws(NetworkTransportError)
+            -> NetworkResponseInterceptorResult in
             throw NetworkTransportError.interceptorError(TestError())
         }
 
@@ -245,7 +246,8 @@ struct ChainedResponseInterceptorTests {
             return .defaultHandling
         }
 
-        let secondInterceptor = ClosureResponseInterceptor { (_: inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult in
+        let secondInterceptor = ClosureResponseInterceptor { (_: inout HTTPResponse) async throws(NetworkTransportError)
+            -> NetworkResponseInterceptorResult in
             throw NetworkTransportError.interceptorError(TestError())
         }
 

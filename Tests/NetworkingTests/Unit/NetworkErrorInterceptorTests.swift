@@ -554,9 +554,9 @@ struct NetworkClientConfigurationErrorInterceptorTests {
 private final class ThrowingURLProtocol: URLProtocol {
     nonisolated(unsafe) static var thrownError: Error = URLError(.cancelled)
 
-    override class func canInit(with _: URLRequest) -> Bool { true }
+    override static func canInit(with _: URLRequest) -> Bool { true }
 
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override static func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
         client?.urlProtocol(self, didFailWithError: Self.thrownError)
@@ -568,9 +568,9 @@ private final class ThrowingURLProtocol: URLProtocol {
 /// A `URLProtocol` subclass that succeeds every request with a 200 response and empty body.
 /// Used to test response interceptor error forwarding paths.
 private final class SucceedingURLProtocol: URLProtocol {
-    override class func canInit(with _: URLRequest) -> Bool { true }
+    override static func canInit(with _: URLRequest) -> Bool { true }
 
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override static func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
         let response = HTTPURLResponse(

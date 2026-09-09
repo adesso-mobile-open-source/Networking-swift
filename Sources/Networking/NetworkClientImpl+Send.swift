@@ -95,7 +95,8 @@ public extension NetworkClientImpl {
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse & NetworkRequestWithBody` to be sent.
     func send<R>(
         request requestConfiguration: R
-    ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
+    ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody>
+    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -123,7 +124,8 @@ public extension NetworkClientImpl {
 
 /// With Optional Response
 public extension NetworkClientImpl {
-    /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType` that may be empty (hence return value of `ResponseType?`).
+    /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`
+    /// that may be empty (hence return value of `ResponseType?`).
     /// May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse` to be sent.
     func send<R, T>(
@@ -161,8 +163,9 @@ public extension NetworkClientImpl {
         }
     }
 
-    /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType` that may be empty (hence return value of `ResponseType?`) and
-    /// contains a request body. May throw in case the request was not successful.
+    /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`
+    /// that may be empty (hence return value of `ResponseType?`) and contains a request body.
+    /// May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse & NetworkRequestWithBody` to be sent.
     func send<R, T>(
         request requestConfiguration: R
@@ -206,7 +209,9 @@ public extension NetworkClientImpl {
     /// - Parameter requestConfiguration: The network request configuration specifying required headers.
     /// - Returns: A dictionary containing the required header field names and their values.
     /// - Throws: `NetworkSendHeaderResponseError.headerFieldsMissing` if any required headers are missing from the response.
-    func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError) -> [String: String] {
+    func send(
+        request requestConfiguration: some NetworkRequestWithHeaderResponse
+    ) async throws(NetworkSendHeaderResponseError) -> [String: String] {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
