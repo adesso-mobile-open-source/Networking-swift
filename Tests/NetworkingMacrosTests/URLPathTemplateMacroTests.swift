@@ -123,6 +123,7 @@ final class URLPathTemplateMacroTests: XCTestCase {
         )
     }
 
+    // swiftlint:disable line_length
     func test_parametersPreserveExtractionOrder() {
         assertMacroExpansion(
             """
@@ -139,15 +140,14 @@ final class URLPathTemplateMacroTests: XCTestCase {
                 let third: PathParameterStringConvertible
 
                 var path: URLPath {
-                    URLPath(unsafeValue:
-                        "a/\\(first.stringRepresentation)/b/\\(second.stringRepresentation)/c/\\(third.stringRepresentation)"
-                    )
+                    URLPath(unsafeValue: "a/\\(first.stringRepresentation)/b/\\(second.stringRepresentation)/c/\\(third.stringRepresentation)")
                 }
             }
             """,
             macros: macros
         )
     }
+    // swiftlint:enable line_length
 
     // MARK: - Validation errors
 
