@@ -87,8 +87,8 @@ extension NetworkClientImpl {
             let urlQueryItems = try requestWithQuery.query.dictionaryRepresentation(
                 dateEncodingStrategy: requestWithQuery.dateEncodingStrategy.dictionaryDateEncodingStrategy
             )
-                .sorted { $0.key < $1.key }
-                .reduce(into: [URLQueryItem]()) { $0.append(URLQueryItem(name: $1.key, value: "\($1.value)")) }
+            .sorted { $0.key < $1.key }
+            .reduce(into: [URLQueryItem]()) { $0.append(URLQueryItem(name: $1.key, value: "\($1.value)")) }
             return urlQueryItems.isEmpty ? nil : urlQueryItems
         } catch {
             throw .cannotEncodeQuery(error.localizedDescription)
@@ -180,7 +180,7 @@ extension NetworkClientImpl {
     ///   - httpResponse: The HTTPResponse containing raw data.
     /// - Returns: An instance of `ResponseBody`. Throws if decoding was unsuccessful.
     func decodeResponse<R: NetworkRequestWithResponse>(request: R, httpResponse: HTTPResponse) throws(ResponseDecodingFailure)
-    -> R.ResponseBody {
+        -> R.ResponseBody {
         guard !httpResponse.data.isEmpty else {
             throw ResponseDecodingFailure.responseHasNoData
         }

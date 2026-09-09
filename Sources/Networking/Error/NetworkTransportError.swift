@@ -88,21 +88,21 @@ public enum NetworkTransportError: Error, Equatable {
     public static func == (lhs: NetworkTransportError, rhs: NetworkTransportError) -> Bool {
         switch (lhs, rhs) {
         case (.noNetworkConnection, .noNetworkConnection):
-            return true
+            true
         case let (.errorStatusCode(lCode, _), .errorStatusCode(rCode, _)):
-            return lCode == rCode
+            lCode == rCode
         case let (.interceptorError(lError), .interceptorError(rError)):
-            return areEqual(lError, rError)
+            areEqual(lError, rError)
         case (.secureConnectionNotPossible, .secureConnectionNotPossible):
-            return true
+            true
         case let (.unknownURLError(lError), .unknownURLError(rError)):
-            return lError == rError
+            lError == rError
         case (.responseIsNoHTTPURLResponse, .responseIsNoHTTPURLResponse):
-            return true
+            true
         case let (.unknownError(lStr), .unknownError(rStr)):
-            return lStr == rStr
+            lStr == rStr
         default:
-            return false
+            false
         }
     }
 
@@ -112,6 +112,7 @@ public enum NetworkTransportError: Error, Equatable {
         guard let rhs = rhs as? T else {
             return false
         }
+
         return lhs == rhs
     }
 }

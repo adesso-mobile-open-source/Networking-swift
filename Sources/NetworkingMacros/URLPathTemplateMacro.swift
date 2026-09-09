@@ -25,15 +25,15 @@ import SwiftSyntaxMacros
 public struct URLPathTemplateMacro: MemberMacro {
     public static func expansion(
         of node: AttributeSyntax,
-        providingMembersOf declaration: some DeclGroupSyntax,
-        conformingTo protocols: [TypeSyntax],
-        in context: some MacroExpansionContext
+        providingMembersOf _: some DeclGroupSyntax,
+        conformingTo _: [TypeSyntax],
+        in _: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         guard
             let stringLiteral = node.arguments?
-                .as(LabeledExprListSyntax.self)?
-                .first?.expression
-                .as(StringLiteralExprSyntax.self)
+            .as(LabeledExprListSyntax.self)?
+            .first?.expression
+            .as(StringLiteralExprSyntax.self)
         else {
             throw MacroExpansionErrorMessage("@URLPathTemplate requires a simple string literal with no interpolations")
         }
@@ -76,7 +76,7 @@ public struct URLPathTemplateMacro: MemberMacro {
 
     // MARK: - Validation
 
-    private static func validateTemplate(_ template: String, node: some SyntaxProtocol) throws {
+    private static func validateTemplate(_ template: String, node _: some SyntaxProtocol) throws {
         var inBraces = false
         for char in template {
             if char == "{" {

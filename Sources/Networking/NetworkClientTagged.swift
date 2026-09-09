@@ -88,17 +88,17 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
     public func send<R>(
         request requestConfiguration: R
     ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse {
+        where R: NetworkRequestWithResponse {
         try await networkClient.send(request: requestConfiguration)
     }
 
     public func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T? {
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T? {
         try await networkClient.send(request: requestConfiguration)
     }
 
     public func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError)
-    -> [String: String] {
+        -> [String: String] {
         try await networkClient.send(request: requestConfiguration)
     }
 
@@ -110,7 +110,7 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
     ///
     /// - Warning: This method triggers an assertion failure. You should not tag an instance
     ///   of `NetworkClientTagged` that is already tagged. Tag the underlying `NetworkClient` instead.
-    public func tag<T>(with tag: T.Type) -> NetworkClientTagged<T> {
+    public func tag<T>(with _: T.Type) -> NetworkClientTagged<T> {
         assertionFailure(
             "You should not tag an existing instance of `NetworkClientTagged<\(Tag.self)>`. Tag the underlying NetworkClient instead."
         )
@@ -160,7 +160,7 @@ public extension NetworkClient {
     ///
     /// - Note: The returned tagged client delegates all operations to the original client.
     ///   Multiple tags can be created from the same underlying client if needed.
-    func tag<Tag>(with tag: Tag.Type) -> NetworkClientTagged<Tag> {
+    func tag<Tag>(with _: Tag.Type) -> NetworkClientTagged<Tag> {
         .init(tagging: self)
     }
 }

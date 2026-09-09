@@ -36,7 +36,7 @@ public final class NetworkClientSpy: NetworkClient {
     private struct ResponseHandler: Sendable {
         let handler: @Sendable (Sendable) async throws -> Sendable
 
-        func call<E: Error>(_ request: Sendable, as errorType: E.Type) async throws(E) -> Sendable {
+        func call<E: Error>(_ request: Sendable, as _: E.Type) async throws(E) -> Sendable {
             do {
                 return try await handler(request)
             } catch let error as E {
@@ -78,20 +78,22 @@ public final class NetworkClientSpy: NetworkClient {
         guard let typedResponse = response as? NetworkResponse<EmptyBody> else {
             fatalError("sendResponse stub has incompatible type \(type(of: response)) for expected NetworkResponse<EmptyBody>")
         }
+
         return typedResponse
     }
 
     public func send(request requestConfiguration: some NetworkRequestWithBody) async throws(NetworkSendError)
-    -> NetworkResponse<EmptyBody> {
+        -> NetworkResponse<EmptyBody> {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendError.self)
         guard let typedResponse = response as? NetworkResponse<EmptyBody> else {
             fatalError("sendResponse stub has incompatible type \(type(of: response)) for expected NetworkResponse<EmptyBody>")
         }
+
         return typedResponse
     }
 
     public func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse {
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendResponseError.self)
         guard let typedResponse = response as? NetworkResponse<R.ResponseBody> else {
             fatalError("sendResponse stub has incompatible type \(type(of: response)) for expected NetworkResponse<\(R.ResponseBody.self)>")
@@ -101,7 +103,7 @@ public final class NetworkClientSpy: NetworkClient {
     }
 
     public func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendResponseError.self)
         guard let typedResponse = response as? NetworkResponse<R.ResponseBody> else {
             fatalError("sendResponse stub has incompatible type \(type(of: response)) for expected NetworkResponse<\(R.ResponseBody.self)>")
@@ -111,7 +113,7 @@ public final class NetworkClientSpy: NetworkClient {
     }
 
     public func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T? {
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T? {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendOptionalResponseError.self)
         guard let typedResponse = response as? NetworkResponse<R.ResponseBody> else {
             fatalError(
@@ -123,7 +125,7 @@ public final class NetworkClientSpy: NetworkClient {
     }
 
     public func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T? {
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T? {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendOptionalResponseError.self)
         guard let typedResponse = response as? NetworkResponse<R.ResponseBody> else {
             fatalError(
@@ -135,7 +137,7 @@ public final class NetworkClientSpy: NetworkClient {
     }
 
     public func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError)
-    -> [String: String] {
+        -> [String: String] {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendHeaderResponseError.self)
         guard let typedResponse = response as? [String: String] else {
             fatalError("sendResponse stub for NetworkRequestWithHeaderResponse must return [String:String] or throw")

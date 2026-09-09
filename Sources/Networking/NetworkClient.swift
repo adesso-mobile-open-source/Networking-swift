@@ -153,7 +153,7 @@ public protocol NetworkClient: AnyObject, Sendable {
     /// contains a request body. May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse & NetworkRequestWithBody` to be sent.
     func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody
 
     /// Sends a preconfigured instance of a `NetworkRequest` with an optional response body.
     /// Returns `NetworkResponse<ResponseBody?>` where the body is `nil` if the server returned an empty response.
@@ -163,7 +163,7 @@ public protocol NetworkClient: AnyObject, Sendable {
     ///
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse` with optional `ResponseBody` to be sent.
     func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError)
-    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T?
+        -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T?
 
     /// Sends a preconfigured instance of a `NetworkRequest` with both a request body and an optional response body.
     /// Returns `NetworkResponse<ResponseBody?>` where the body is `nil` if the server returned an empty response.
@@ -174,7 +174,7 @@ public protocol NetworkClient: AnyObject, Sendable {
     func send<R, T>(
         request requestConfiguration: R
     ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T?
+        where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T?
 
     /// Sends a network request and returns specific headers from the response.
     /// - Parameter requestConfiguration: The request configuration specifying which headers are required.

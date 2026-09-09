@@ -11,14 +11,12 @@
 //
 
 #if os(macOS)
+@testable import NetworkingMacros
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
 
-@testable import NetworkingMacros
-
 final class URLPathTemplateMacroTests: XCTestCase {
-
     private let macros: [String: any Macro.Type] = ["URLPathTemplate": URLPathTemplateMacro.self]
 
     // MARK: - Valid expansion
@@ -147,6 +145,7 @@ final class URLPathTemplateMacroTests: XCTestCase {
             macros: macros
         )
     }
+
     // swiftlint:enable line_length
 
     // MARK: - Validation errors
@@ -256,8 +255,8 @@ final class URLPathTemplateMacroTests: XCTestCase {
         )
     }
 
-    // Interpolated string literals have no segments readable as plain text,
-    // so the macro falls through to the empty-string check after extracting "".
+    /// Interpolated string literals have no segments readable as plain text,
+    /// so the macro falls through to the empty-string check after extracting "".
     func test_interpolation_emitsError() {
         assertMacroExpansion(
             #"""
