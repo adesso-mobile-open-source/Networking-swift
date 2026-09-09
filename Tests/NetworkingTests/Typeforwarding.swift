@@ -1,0 +1,16 @@
+//
+//  Typeforwarding.swift
+//  Networking
+//
+//  Created by Niklas Holloh on 13.08.25.
+//  Copyright 2026 adesso SE
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+
+// Convenience imports so we don't have to in every file.
+@_exported import Foundation
+@_exported import Networking
+@_exported import Testing

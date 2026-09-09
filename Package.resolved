@@ -1,0 +1,33 @@
+{
+  "originHash" : "bf7e39fa669fbb4a5663633ecce0d0f8cedbff9bd41156631a20c844ea53513c",
+  "pins" : [
+    {
+      "identity" : "dictionarycoder",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/almazrafi/DictionaryCoder.git",
+      "state" : {
+        "revision" : "b3d069fcace8200c041bd3978737d2780772e4be",
+        "version" : "1.4.0"
+      }
+    },
+    {
+      "identity" : "mocker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/WeTransfer/Mocker.git",
+      "state" : {
+        "revision" : "95fa785c751f6bc40c49e112d433c3acf8417a97",
+        "version" : "3.0.2"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "9de99a78f099e59caf2b2beec65a4c45d54b2081",
+        "version" : "603.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}
