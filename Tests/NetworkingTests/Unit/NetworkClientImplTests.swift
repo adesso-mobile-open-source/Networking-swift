@@ -670,14 +670,20 @@ private struct TestNetworkRequest: NetworkRequest {
 }
 
 private struct TestNetworkRequestWithQuery: NetworkRequest, NetworkRequestWithQuery {
-    let path: URLPath; let method: HTTPMethod; let headers: [HTTPHeader: String]; let query: TestQuery
+    let path: URLPath
+    let method: HTTPMethod
+    let headers: [HTTPHeader: String]
+    let query: TestQuery
     init(path: URLPath = URLPath(unsafeValue: "stub"), method: HTTPMethod = .get, headers: [HTTPHeader: String] = [:], query: TestQuery) {
         self.path = path; self.method = method; self.headers = headers; self.query = query
     }
 }
 
 private struct TestNetworkRequestWithEmptyQuery: NetworkRequest, NetworkRequestWithQuery {
-    let path: URLPath = URLPath(unsafeValue: "stub"); let method: HTTPMethod = .get; let headers: [HTTPHeader: String] = [:]; let query: EmptyQuery
+    let path: URLPath = URLPath(unsafeValue: "stub")
+    let method: HTTPMethod = .get
+    let headers: [HTTPHeader: String] = [:]
+    let query: EmptyQuery
 }
 
 private struct TestNetworkRequestWithDateQuery: NetworkRequest, NetworkRequestWithQuery {
