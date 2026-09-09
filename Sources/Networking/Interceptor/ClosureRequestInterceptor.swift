@@ -25,7 +25,7 @@ public final class ClosureRequestInterceptor: NetworkRequestInterceptor {
     public func intercept(request: inout HTTPRequest) async throws(NetworkTransportError) {
         try await closure(&request)
     }
-    
+
     /// A no-operation empty closure request interceptor.
     public static let empty = ClosureRequestInterceptor { _ in }
 }

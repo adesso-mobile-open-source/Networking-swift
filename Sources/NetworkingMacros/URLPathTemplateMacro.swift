@@ -92,7 +92,9 @@ public struct URLPathTemplateMacro: MemberMacro {
             case " ":
                 throw MacroExpansionErrorMessage("@URLPathTemplate contains an unencoded space — use %20")
             case "?":
-                throw MacroExpansionErrorMessage("@URLPathTemplate contains an unencoded '?' — query parameters belong in NetworkRequestWithQuery")
+                throw MacroExpansionErrorMessage(
+                    "@URLPathTemplate contains an unencoded '?' — query parameters belong in NetworkRequestWithQuery"
+                )
             case "#":
                 throw MacroExpansionErrorMessage("@URLPathTemplate contains an unencoded '#' — use %23")
             default:

@@ -21,7 +21,7 @@ public final class ChainedResponseInterceptor: NetworkResponseInterceptor, Expre
         self.first = first
         self.second = second
     }
-    
+
     public convenience init(arrayLiteral interceptors: NetworkResponseInterceptor...) {
         guard let first = interceptors.first else {
             self.init(first: ClosureResponseInterceptor.empty, second: ClosureResponseInterceptor.empty)

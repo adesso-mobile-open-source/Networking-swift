@@ -52,10 +52,10 @@
 ///
 /// See `NetworkClient.tag(with:)` for tagging an existing client.
 @NetworkActor
-public final class NetworkClientTagged<Tag>: NetworkClient {    
+public final class NetworkClientTagged<Tag>: NetworkClient {
     /// The underlying network client that handles all requests.
     private let networkClient: NetworkClient
-    
+
     /// Creates a new tagged network client wrapping an existing client.
     ///
     /// - Parameter networkClient: The network client to wrap.
@@ -64,7 +64,7 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
     init(tagging networkClient: NetworkClient) {
         self.networkClient = networkClient
     }
-    
+
     /// The configuration of the underlying network client.
     ///
     /// Modifying this property mutates the configuration of the wrapped client.
@@ -72,7 +72,7 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
         get { networkClient.configuration }
         set { networkClient.configuration = newValue }
     }
-    
+
     /// The network environment of the underlying network client.
     ///
     /// Modifying this property mutates the environment of the wrapped client.
@@ -80,32 +80,40 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
         get { networkClient.environment }
         set { networkClient.environment = newValue }
     }
-    
+
     public func send(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
         try await networkClient.send(request: requestConfiguration)
     }
-    
-    public func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody> where R : NetworkRequestWithResponse {
+
+    public func send<R>(
+        request requestConfiguration: R
+    ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody>
+    where R: NetworkRequestWithResponse {
         try await networkClient.send(request: requestConfiguration)
     }
-    
-    public func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody> where R : NetworkRequestWithResponse, R.ResponseBody == Optional<T> {
+
+    public func send<R, T>(request requestConfiguration: R) async throws(NetworkSendOptionalResponseError)
+    -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R.ResponseBody == T? {
         try await networkClient.send(request: requestConfiguration)
     }
-    
-    public func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError) -> [String : String] {
+
+    public func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError)
+    -> [String: String] {
         try await networkClient.send(request: requestConfiguration)
     }
-    
+
     /// Attempts to re-tag an already-tagged client.
     ///
     /// - Parameter tag: The new tag type.
-    /// - Returns: A new tagged client (though this should not be used in practice).
+    /// - Returns: A new tagged client (though this should not be used in
+    ///   practice).
     ///
     /// - Warning: This method triggers an assertion failure. You should not tag an instance
     ///   of `NetworkClientTagged` that is already tagged. Tag the underlying `NetworkClient` instead.
     public func tag<T>(with tag: T.Type) -> NetworkClientTagged<T> {
-        assertionFailure("You should not tag an existing instance of `NetworkClientTagged<\(Tag.self)>`. Tag the underlying NetworkClient instead.")
+        assertionFailure(
+            "You should not tag an existing instance of `NetworkClientTagged<\(Tag.self)>`. Tag the underlying NetworkClient instead."
+        )
         return .init(tagging: self)
     }
 }

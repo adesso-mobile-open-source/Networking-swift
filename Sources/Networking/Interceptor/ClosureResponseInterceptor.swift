@@ -18,14 +18,16 @@ public final class ClosureResponseInterceptor: NetworkResponseInterceptor {
 
     /// Creates a response interceptor, which receives a closure to process the HTTPResponse.
     /// - Parameter closure: The closure which receives and mutates the HTTPResponse.
-    public init(_ closure: @escaping @Sendable (inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult) {
+    public init(
+        _ closure: @escaping @Sendable (inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult
+    ) {
         self.closure = closure
     }
 
     public func intercept(response: inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult {
         try await closure(&response)
     }
-    
+
     /// A no-operation empty closure response interceptor.
     public static let empty = ClosureResponseInterceptor { _ in .defaultHandling }
 }

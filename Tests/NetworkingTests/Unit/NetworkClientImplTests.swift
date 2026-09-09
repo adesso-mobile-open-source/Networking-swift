@@ -255,7 +255,10 @@ struct NetworkClientImplTests {
         // Then
         #expect(result == .retryRequest)
     }
+}
 
+@NetworkActor
+extension NetworkClientImplTests {
     // MARK: - Response Decoding Tests
 
     @Test
@@ -753,7 +756,7 @@ private struct TestResponseBody: Codable { let id: String; let success: Bool }
 let testNetworkEnvironment: NetworkEnvironment = .init(base: URLBase(unsafeValue: "https://api.test.com"), defaultHeaders: ["Content-Type": "application/json", "X-API-Key": "test-key"])
 
 private struct TestDataEncoder: DataEncoding {
-    func encode(_: some Encodable) throws -> Data { "TestDataEncoder".data(using: .utf8)! }
+    func encode(_: some Encodable) throws -> Data { Data("TestDataEncoder".utf8) }
 }
 
 private struct FailingDataEncoder: DataEncoding {

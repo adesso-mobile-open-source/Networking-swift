@@ -131,7 +131,7 @@ public extension NetworkClientImpl {
     func send<R, T>(
         request requestConfiguration: R
     ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse, R.ResponseBody == Optional<T> {
+    where R: NetworkRequestWithResponse, R.ResponseBody == T? {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -170,7 +170,7 @@ public extension NetworkClientImpl {
     func send<R, T>(
         request requestConfiguration: R
     ) async throws(NetworkSendOptionalResponseError) -> NetworkResponse<R.ResponseBody>
-    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == Optional<T> {
+    where R: NetworkRequestWithResponse, R: NetworkRequestWithBody, R.ResponseBody == T? {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -284,7 +284,10 @@ extension NetworkClientImpl {
     ///   - httpRequest: The HTTPRequest to send.
     ///   - requestConfiguration: The request configuration.
     /// - Returns: A HTTPResponse as provided by server or stubs.
-    func getResponse(for httpRequest: HTTPRequest, requestConfiguration: some NetworkRequest) async throws(NetworkTransportError) -> HTTPResponse {
+    func getResponse(
+        for httpRequest: HTTPRequest,
+        requestConfiguration: some NetworkRequest
+    ) async throws(NetworkTransportError) -> HTTPResponse {
         var httpRequest = httpRequest
         try await intercept(request: requestConfiguration, httpRequest: &httpRequest)
 
@@ -298,7 +301,7 @@ extension NetworkClientImpl {
             guard let urlError = error as? URLError else {
                 throw .unknownError(error.localizedDescription)
             }
-            
+
             let networkError = urlError.networkError
             let result = await intercept(request: requestConfiguration, error: networkError)
             if case .retryRequest = result {

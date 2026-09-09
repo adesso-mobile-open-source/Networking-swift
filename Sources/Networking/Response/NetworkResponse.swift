@@ -30,11 +30,11 @@ public struct NetworkResponse<T>: Sendable where T: Sendable {
     /// This is automatically decoded from `rawBody` using the decoder configured
     /// for the request (or the global decoder from `NetworkClientConfiguration`).
     public let body: T
-    
+
     /// The `HTTPResponse` that wraps around the raw body data, the
     /// request sent and the SDK's `URLResponse`.
     public let httpResponse: HTTPResponse
-    
+
     /// The raw data in the response body.
     ///
     /// Use this for:
@@ -47,23 +47,23 @@ public struct NetworkResponse<T>: Sendable where T: Sendable {
     public var rawBody: Data {
         httpResponse.data
     }
-    
+
     /// The header fields returned in the server's response.
     public var headerFields: [AnyHashable: Any] {
         httpResponse.urlResponse.allHeaderFields
     }
-    
+
     /// The status code that the server sent.
     public var statusCode: Int {
         httpResponse.urlResponse.statusCode
     }
-    
+
     /// Dynamically look up members of the decoded response body type as if they were members of
     /// this struct.
     public subscript<V>(dynamicMember dynamicMember: KeyPath<T, V>) -> V {
         body[keyPath: dynamicMember]
     }
-    
+
     init(httpResponse: HTTPResponse, body: T = EmptyBody()) {
         self.httpResponse = httpResponse
         self.body = body

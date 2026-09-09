@@ -49,13 +49,11 @@ public struct URLPathMacro: ExpressionMacro {
             ("?", "unencoded '?' — query parameters belong in NetworkRequestWithQuery"),
             ("#", "unencoded '#' — use %23"),
             ("{", "unencoded '{' — use @URLPathTemplate for dynamic paths"),
-            ("}", "unencoded '}'"),
+            ("}", "unencoded '}'")
         ]
 
-        for (char, hint) in forbidden {
-            if path.contains(char) {
-                throw MacroExpansionErrorMessage("#URLPath contains \(hint)")
-            }
+        for (char, hint) in forbidden where path.contains(char) {
+            throw MacroExpansionErrorMessage("#URLPath contains \(hint)")
         }
 
         for scalar in path.unicodeScalars {

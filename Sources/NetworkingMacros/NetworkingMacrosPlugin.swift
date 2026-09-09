@@ -18,6 +18,6 @@ struct NetworkingMacrosPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         URLBaseMacro.self,
         URLPathMacro.self,
-        URLPathTemplateMacro.self,
+        URLPathTemplateMacro.self
     ]
 }

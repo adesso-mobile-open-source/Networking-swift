@@ -36,6 +36,8 @@ public struct URLPath: Sendable, Equatable {
 
     /// Unavailable. Use the `#URLPath` macro for static paths or
     /// `@URLPathTemplate` for paths with dynamic segments.
-    @available(*, unavailable, message: "Use #URLPath for static paths or @URLPathTemplate for dynamic paths — both validate at compile time.")
+    @available(
+        *, unavailable, message: "Use #URLPath for static paths or @URLPathTemplate for dynamic paths — both validate at compile time."
+    )
     public init(_ value: String) { fatalError() }
 }

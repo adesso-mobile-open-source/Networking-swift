@@ -17,9 +17,9 @@ import Foundation
 @NetworkActor
 public final class NetworkClientImpl: NetworkClient {
     // MARK: - Public Configuration
-    
+
     public var configuration: NetworkClientConfiguration
-    
+
     public var environment: NetworkEnvironment {
         get { configuration.environment }
         set { configuration.environment = newValue }
@@ -75,7 +75,8 @@ extension NetworkClientImpl {
     /// Produces query items for a given request.
     /// - Parameter request: The configured NetworkRequest object.
     /// - Returns: A list of query items or `nil`, if no query items are found.
-    func queryItems(request: any NetworkRequest) throws(RequestBuildingFailure) -> [URLQueryItem]? { // swiftlint:disable:this discouraged_optional_collection
+    // swiftlint:disable:next discouraged_optional_collection
+    func queryItems(request: any NetworkRequest) throws(RequestBuildingFailure) -> [URLQueryItem]? {
         guard let requestWithQuery = request as? (any NetworkRequestWithQuery) else {
             // We need to return nil here, otherwise URLRequest will
             // append ? with no query items if the array is empty.
@@ -88,7 +89,6 @@ extension NetworkClientImpl {
             )
                 .sorted { $0.key < $1.key }
                 .reduce(into: [URLQueryItem]()) { $0.append(URLQueryItem(name: $1.key, value: "\($1.value)")) }
-            
             return urlQueryItems.isEmpty ? nil : urlQueryItems
         } catch {
             throw .cannotEncodeQuery(error.localizedDescription)
@@ -139,7 +139,9 @@ extension NetworkClientImpl {
     ///   - request: The request configuration.
     ///   - httpResponse: The HTTPResponse to intercept.
     /// - Returns: A joint interception result, indicating abort, retry or similar.
-    func intercept(request: some Any, httpResponse: inout HTTPResponse) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult {
+    func intercept(
+        request: some Any, httpResponse: inout HTTPResponse
+    ) async throws(NetworkTransportError) -> NetworkResponseInterceptorResult {
         guard let requestWithCustomInterceptor = request as? NetworkRequestWithResponseInterceptor else {
             return try await configuration.responseInterceptor.intercept(response: &httpResponse)
         }
@@ -177,7 +179,8 @@ extension NetworkClientImpl {
     ///   - request: The request configuration, specifying the expected ResponseBody type.
     ///   - httpResponse: The HTTPResponse containing raw data.
     /// - Returns: An instance of `ResponseBody`. Throws if decoding was unsuccessful.
-    func decodeResponse<R: NetworkRequestWithResponse>(request: R, httpResponse: HTTPResponse) throws(ResponseDecodingFailure) -> R.ResponseBody {
+    func decodeResponse<R: NetworkRequestWithResponse>(request: R, httpResponse: HTTPResponse) throws(ResponseDecodingFailure)
+    -> R.ResponseBody {
         guard !httpResponse.data.isEmpty else {
             throw ResponseDecodingFailure.responseHasNoData
         }

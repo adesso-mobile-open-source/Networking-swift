@@ -27,7 +27,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-syntax.git", exact: "603.0.1"),
         .package(url: "https://github.com/WeTransfer/Mocker.git", from: "3.0.2"),
-        .package(url: "https://github.com/almazrafi/DictionaryCoder.git", from: "1.3.0")
+        .package(url: "https://github.com/almazrafi/DictionaryCoder.git", from: "1.3.0"),
+        .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins", from: "0.65.1")
     ],
     targets: [
         .macro(
@@ -36,15 +37,18 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax")
-            ]
+            ],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         ),
         .target(
             name: "Networking",
-            dependencies: ["NetworkingMacros", "DictionaryCoder"]
+            dependencies: ["NetworkingMacros", "DictionaryCoder"],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         ),
         .testTarget(
             name: "NetworkingTests",
-            dependencies: ["Networking", "Mocker"]
+            dependencies: ["Networking", "Mocker"],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         ),
         .testTarget(
             name: "NetworkingMacrosTests",
@@ -52,7 +56,8 @@ let package = Package(
                 "NetworkingMacros",
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
-            ]
+            ],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         )
     ]
 )

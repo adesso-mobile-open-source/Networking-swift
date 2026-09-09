@@ -21,7 +21,7 @@ public final class ChainedErrorInterceptor: NetworkErrorInterceptor, Expressible
         self.first = first
         self.second = second
     }
-    
+
     public convenience init(arrayLiteral interceptors: NetworkErrorInterceptor...) {
         guard let first = interceptors.first else {
             self.init(first: ClosureErrorInterceptor.empty, second: ClosureErrorInterceptor.empty)

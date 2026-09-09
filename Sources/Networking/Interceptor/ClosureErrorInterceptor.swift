@@ -25,7 +25,7 @@ public final class ClosureErrorInterceptor: NetworkErrorInterceptor {
     public func intercept(error: NetworkTransportError) async -> NetworkErrorInterceptorResult {
         await closure(error)
     }
-    
+
     /// A no-operation empty closure error interceptor.
     public static let empty = ClosureErrorInterceptor { _ in .defaultHandling }
 }

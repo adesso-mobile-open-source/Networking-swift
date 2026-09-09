@@ -57,9 +57,9 @@ public struct URLBase: Sendable, Equatable {
     /// let url: ResolvedURL = #URLBase("https://api.example.com") + #URLPath("users/profile")
     /// ```
     public static func + (base: URLBase, path: URLPath) -> ResolvedURL {
-        let b = base.value.hasSuffix("/") ? String(base.value.dropLast()) : base.value
-        let p = path.value.hasPrefix("/") ? String(path.value.dropFirst()) : path.value
-        return ResolvedURL(rawValue: p.isEmpty ? b + "/" : b + "/" + p)
+        let base = base.value.hasSuffix("/") ? String(base.value.dropLast()) : base.value
+        let path = path.value.hasPrefix("/") ? String(path.value.dropFirst()) : path.value
+        return ResolvedURL(rawValue: path.isEmpty ? base + "/" : base + "/" + path)
     }
 }
 
