@@ -28,8 +28,8 @@ import Foundation
 /// let resolved: ResolvedURL = base + #URLPath("users/profile")
 /// ```
 public struct URLBase: Sendable, Equatable {
-    /// The raw validated base URL string (no query, no fragment).
-    public let value: String
+    /// The raw validated base URL (no query, no fragment).
+    public let value: URL
 
     /// Creates a `URLBase` from a raw string **without compile-time validation**.
     ///
@@ -37,8 +37,9 @@ public struct URLBase: Sendable, Equatable {
     /// the absence of query/fragment/template characters at compile time.
     /// Use this initializer only when the base URL is not known at compile
     /// time (e.g. test scaffolding or runtime configuration).
+    /// Calling this with an invalid URL string will crash the app.
     public init(unsafeValue value: String) {
-        self.value = value
+        self.value = URL(string: value)!
     }
 
     /// Unavailable. Use the `#URLBase` macro, which validates the scheme,
@@ -59,9 +60,7 @@ public struct URLBase: Sendable, Equatable {
     /// let url: ResolvedURL = #URLBase("https://api.example.com") + #URLPath("users/profile")
     /// ```
     public static func + (base: URLBase, path: URLPath) -> ResolvedURL {
-        let base = base.value.hasSuffix("/") ? String(base.value.dropLast()) : base.value
-        let path = path.value.hasPrefix("/") ? String(path.value.dropFirst()) : path.value
-        return ResolvedURL(rawValue: path.isEmpty ? base + "/" : base + "/" + path)
+        ResolvedURL(url: base.value.appending(path: path.value))
     }
 }
 
@@ -81,13 +80,7 @@ public struct URLBase: Sendable, Equatable {
 /// ```
 public struct ResolvedURL: Sendable, Equatable {
     /// The composed URL string.
-    public let rawValue: String
-
-    /// The composed URL.
-    ///
-    /// Constructed by `URLBase + URLPath` using macro-validated inputs, so the
-    /// result is always a valid URL. The force-unwrap is intentional and safe.
-    public var url: URL { URL(string: rawValue)! }
+    public let url: URL
 
     /// Returns a new `ResolvedURL` with the given query items appended.
     ///
@@ -95,9 +88,6 @@ public struct ResolvedURL: Sendable, Equatable {
     ///   returns `self` unchanged (no trailing `?` is inserted).
     public func appending(queryItems: [URLQueryItem]) -> ResolvedURL {
         guard !queryItems.isEmpty else { return self }
-
-        var components = URLComponents(string: rawValue)!
-        components.queryItems = queryItems
-        return ResolvedURL(rawValue: components.string!)
+        return ResolvedURL(url: url.appending(queryItems: queryItems))
     }
 }
