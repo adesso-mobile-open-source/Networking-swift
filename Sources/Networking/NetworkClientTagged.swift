@@ -81,10 +81,12 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
         set { networkClient.environment = newValue }
     }
 
-    public func send(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
-        try await networkClient.send(request: requestConfiguration)
+    public func sendExpectingEmptyBody(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError)
+        -> NetworkResponse<EmptyBody> {
+        try await networkClient.sendExpectingEmptyBody(request: requestConfiguration)
     }
 
+    @_disfavoredOverload
     public func send<R>(
         request requestConfiguration: R
     ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody>
@@ -97,6 +99,7 @@ public final class NetworkClientTagged<Tag>: NetworkClient {
         try await networkClient.send(request: requestConfiguration)
     }
 
+    @_disfavoredOverload
     public func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError)
         -> [String: String] {
         try await networkClient.send(request: requestConfiguration)
