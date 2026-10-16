@@ -27,7 +27,7 @@ public final class NetworkClientImpl: NetworkClient {
 
     /// Creates a new `NetworkClientImpl` with the specified environment and default configuration.
     /// - Parameter environment: The network environment supplying the base URL and default headers.
-    public convenience init(environment: NetworkEnvironment) {
+    public nonisolated convenience init(environment: NetworkEnvironment) {
         self.init(configuration: .init(environment: environment))
     }
 
@@ -37,7 +37,7 @@ public final class NetworkClientImpl: NetworkClient {
     /// allowing different timeout and retry behaviors for different network managers (e.g., public vs. non-public).
     ///
     /// - Parameter configuration: The network manager configuration to be used.
-    public convenience init(configuration: NetworkClientConfiguration) {
+    public nonisolated convenience init(configuration: NetworkClientConfiguration) {
         self.init(
             urlSession: URLSession(configuration: configuration.sessionConfiguration),
             configuration: configuration
@@ -51,7 +51,7 @@ public final class NetworkClientImpl: NetworkClient {
     /// - Parameters:
     ///   - urlSession: The `URLSession` used to perform requests.
     ///   - configuration: The full configuration to apply.
-    public init(urlSession: URLSession, configuration: NetworkClientConfiguration) {
+    public nonisolated init(urlSession: URLSession, configuration: NetworkClientConfiguration) {
         self.urlSession = urlSession
         self.configuration = configuration
     }
@@ -60,7 +60,7 @@ public final class NetworkClientImpl: NetworkClient {
     /// - Parameters:
     ///   - urlSession: The `URLSession` used to perform requests.
     ///   - environment: The network environment supplying the base URL and default headers.
-    public convenience init(urlSession: URLSession, environment: NetworkEnvironment) {
+    public nonisolated convenience init(urlSession: URLSession, environment: NetworkEnvironment) {
         self.init(urlSession: urlSession, configuration: .init(environment: environment))
     }
 
