@@ -130,21 +130,24 @@ public protocol NetworkClient: AnyObject, Sendable {
 
     // MARK: - Send
 
-    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response.
+    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response body.
     /// May throw in case the request was not successful.
+    ///
+    /// This is the implementation hook behind `send(request: some NetworkRequest)` and
+    /// `send(request: some NetworkRequestWithBody)`, which are provided as protocol extension
+    /// members on `NetworkClient`. Conforming types implement this method; call sites use
+    /// `send(request:)`. See the "Overload ranking" note at the end of this file for why the
+    /// no-response overloads cannot be protocol requirements.
+    ///
     /// - Parameter requestConfiguration: The `NetworkRequest` to be sent.
     @discardableResult
-    func send(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError) -> NetworkResponse<EmptyBody>
-
-    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response and
-    /// contains a request body. May throw in case the request was not successful.
-    /// - Parameter requestConfiguration: The `NetworkRequestWithBody` to be sent.
-    @discardableResult
-    func send(request requestConfiguration: some NetworkRequestWithBody) async throws(NetworkSendError) -> NetworkResponse<EmptyBody>
+    func sendExpectingEmptyBody(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError)
+        -> NetworkResponse<EmptyBody>
 
     /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`.
     /// May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse` to be sent.
+    @_disfavoredOverload
     func send<R>(
         request requestConfiguration: R
     ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse
@@ -152,6 +155,7 @@ public protocol NetworkClient: AnyObject, Sendable {
     /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`and
     /// contains a request body. May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse & NetworkRequestWithBody` to be sent.
+    @_disfavoredOverload
     func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError)
         -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody
 
@@ -179,7 +183,52 @@ public protocol NetworkClient: AnyObject, Sendable {
     /// Sends a network request and returns specific headers from the response.
     /// - Parameter requestConfiguration: The request configuration specifying which headers are required.
     /// - Returns: A dictionary containing the required header field names and their values.
+    @_disfavoredOverload
     func send(
         request requestConfiguration: some NetworkRequestWithHeaderResponse
     ) async throws(NetworkSendHeaderResponseError) -> [String: String]
+}
+
+// MARK: - Overload ranking
+
+// The `send(request:)` overloads all throw different, unrelated error types. Since Swift 6.4 the
+// compiler requires the thrown error type of a less specific overload to be a subtype of the thrown
+// error type of the more specific overload before it will rank the two (swiftlang/swift#90847).
+// Two distinct enums never satisfy this, so every pair of overloads with different error types is
+// reported as ambiguous. The workaround below makes the compiler decide each pair *before* it reaches
+// that check, using two rules that are evaluated earlier:
+//
+// 1. A solution using an `@_disfavoredOverload` declaration always loses against one that does not.
+// 2. A protocol requirement (or a concrete type's member) always beats a protocol extension member.
+//
+// This yields three tiers, which matches the intended specificity order of the overloads:
+//
+// | Tier | Overloads                                                      | Declared as                         |
+// |------|----------------------------------------------------------------|-------------------------------------|
+// | 1    | optional response (`R.ResponseBody == T?`)                     | requirement                         |
+// | 2    | response, response + body, header response                     | requirement, `@_disfavoredOverload` |
+// | 3    | no response, no response + body                                | extension, `@_disfavoredOverload`   |
+//
+// Overloads within one tier throw the same error type, so the regular ranking by parameter
+// specificity still applies there. Conforming types must therefore *not* declare their own
+// `send(request: some NetworkRequest)`; they implement `sendExpectingEmptyBody(request:)` instead.
+
+public extension NetworkClient {
+    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response.
+    /// May throw in case the request was not successful.
+    /// - Parameter requestConfiguration: The `NetworkRequest` to be sent.
+    @_disfavoredOverload
+    @discardableResult
+    func send(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
+        try await sendExpectingEmptyBody(request: requestConfiguration)
+    }
+
+    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response and
+    /// contains a request body. May throw in case the request was not successful.
+    /// - Parameter requestConfiguration: The `NetworkRequestWithBody` to be sent.
+    @_disfavoredOverload
+    @discardableResult
+    func send(request requestConfiguration: some NetworkRequestWithBody) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
+        try await sendExpectingEmptyBody(request: requestConfiguration)
+    }
 }

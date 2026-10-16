@@ -13,33 +13,15 @@
 import Foundation
 
 public extension NetworkClientImpl {
-    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response.
+    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response body.
     /// May throw in case the request was not successful.
+    ///
+    /// Backs `send(request: some NetworkRequest)` and `send(request: some NetworkRequestWithBody)`,
+    /// which `NetworkClient` provides as protocol extension members.
     /// - Parameter requestConfiguration: The `NetworkRequest` to be sent.
     @discardableResult
-    func send(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
-        let httpRequest: HTTPRequest
-        do {
-            httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
-        } catch {
-            throw NetworkSendError(error)
-        }
-
-        let httpResponse: HTTPResponse
-        do {
-            httpResponse = try await getResponse(for: httpRequest, requestConfiguration: requestConfiguration)
-        } catch {
-            throw NetworkSendError(error)
-        }
-
-        return .init(httpResponse: httpResponse)
-    }
-
-    /// Sends a preconfigured instance of a `NetworkRequest`, which does not expect a response and
-    /// contains a request body. May throw in case the request was not successful.
-    /// - Parameter requestConfiguration: The `NetworkRequestWithBody` to be sent.
-    @discardableResult
-    func send(request requestConfiguration: some NetworkRequestWithBody) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
+    func sendExpectingEmptyBody(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError)
+        -> NetworkResponse<EmptyBody> {
         let httpRequest: HTTPRequest
         do {
             httpRequest = try makeHTTPRequest(requestConfiguration: requestConfiguration)
@@ -63,6 +45,7 @@ public extension NetworkClientImpl {
     /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`.
     /// May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse` to be sent.
+    @_disfavoredOverload
     func send<R>(
         request requestConfiguration: R
     ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse {
@@ -93,6 +76,7 @@ public extension NetworkClientImpl {
     /// Sends a preconfigured instance of a `NetworkRequest`, which expects a response of `ResponseType`and
     /// contains a request body. May throw in case the request was not successful.
     /// - Parameter requestConfiguration: The `NetworkRequestWithResponse & NetworkRequestWithBody` to be sent.
+    @_disfavoredOverload
     func send<R>(
         request requestConfiguration: R
     ) async throws(NetworkSendResponseError) -> NetworkResponse<R.ResponseBody>
@@ -209,6 +193,7 @@ public extension NetworkClientImpl {
     /// - Parameter requestConfiguration: The network request configuration specifying required headers.
     /// - Returns: A dictionary containing the required header field names and their values.
     /// - Throws: `NetworkSendHeaderResponseError.headerFieldsMissing` if any required headers are missing from the response.
+    @_disfavoredOverload
     func send(
         request requestConfiguration: some NetworkRequestWithHeaderResponse
     ) async throws(NetworkSendHeaderResponseError) -> [String: String] {

@@ -73,16 +73,7 @@ public final class NetworkClientSpy: NetworkClient {
 
     // MARK: - Protocol Implementation
 
-    public func send(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError) -> NetworkResponse<EmptyBody> {
-        let response = try await handleSend(for: requestConfiguration, as: NetworkSendError.self)
-        guard let typedResponse = response as? NetworkResponse<EmptyBody> else {
-            fatalError("sendResponse stub has incompatible type \(type(of: response)) for expected NetworkResponse<EmptyBody>")
-        }
-
-        return typedResponse
-    }
-
-    public func send(request requestConfiguration: some NetworkRequestWithBody) async throws(NetworkSendError)
+    public func sendExpectingEmptyBody(request requestConfiguration: some NetworkRequest) async throws(NetworkSendError)
         -> NetworkResponse<EmptyBody> {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendError.self)
         guard let typedResponse = response as? NetworkResponse<EmptyBody> else {
@@ -92,6 +83,7 @@ public final class NetworkClientSpy: NetworkClient {
         return typedResponse
     }
 
+    @_disfavoredOverload
     public func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError)
         -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendResponseError.self)
@@ -102,6 +94,7 @@ public final class NetworkClientSpy: NetworkClient {
         return typedResponse
     }
 
+    @_disfavoredOverload
     public func send<R>(request requestConfiguration: R) async throws(NetworkSendResponseError)
         -> NetworkResponse<R.ResponseBody> where R: NetworkRequestWithResponse, R: NetworkRequestWithBody {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendResponseError.self)
@@ -136,6 +129,7 @@ public final class NetworkClientSpy: NetworkClient {
         return typedResponse
     }
 
+    @_disfavoredOverload
     public func send(request requestConfiguration: some NetworkRequestWithHeaderResponse) async throws(NetworkSendHeaderResponseError)
         -> [String: String] {
         let response = try await handleSend(for: requestConfiguration, as: NetworkSendHeaderResponseError.self)
