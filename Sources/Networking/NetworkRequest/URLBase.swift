@@ -88,6 +88,7 @@ public struct ResolvedURL: Sendable, Equatable {
     ///   returns `self` unchanged (no trailing `?` is inserted).
     public func appending(queryItems: [URLQueryItem]) -> ResolvedURL {
         guard !queryItems.isEmpty else { return self }
+
         return ResolvedURL(url: url.appending(queryItems: queryItems))
     }
 }
