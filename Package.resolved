@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/almazrafi/DictionaryCoder.git",
       "state" : {
-        "revision" : "b3d069fcace8200c041bd3978737d2780772e4be",
-        "version" : "1.4.0"
+        "revision" : "aafc0f684cc2fa9b7754a859d1586af4fe6971d0",
+        "version" : "1.5.0"
       }
     },
     {
