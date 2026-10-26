@@ -31,9 +31,9 @@ public struct URLPathTemplateMacro: MemberMacro {
     ) throws -> [DeclSyntax] {
         guard
             let stringLiteral = node.arguments?
-            .as(LabeledExprListSyntax.self)?
-            .first?.expression
-            .as(StringLiteralExprSyntax.self)
+                .as(LabeledExprListSyntax.self)?
+                .first?.expression
+                .as(StringLiteralExprSyntax.self)
         else {
             throw MacroExpansionErrorMessage("@URLPathTemplate requires a simple string literal with no interpolations")
         }
