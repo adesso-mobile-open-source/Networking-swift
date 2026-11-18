@@ -26,6 +26,14 @@ public struct HTTPRequest: Sendable, Equatable {
     /// The network environment used to construct this request.
     public let environment: NetworkEnvironment
 
+    /// How many times this request has been retried: `0` for the first attempt, `1` for the first retry, and so on.
+    ///
+    /// Every attempt passes through the request interceptors again, starting from the request as it was built (not
+    /// from the previous attempt's intercepted copy), so interceptors can use this value, e.g. to wait before a
+    /// retry. Error interceptors can read it from the response of an `.errorStatusCode` error
+    /// (`response.request.retryCount`).
+    public internal(set) var retryCount = 0
+
     /// Computes partial equality based on the urlRequest and uuid properties of two HTTPRequests.
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.uuid == rhs.uuid && lhs.urlRequest == rhs.urlRequest

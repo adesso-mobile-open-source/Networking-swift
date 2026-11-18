@@ -265,6 +265,9 @@ extension NetworkClientImpl {
     }
 
     /// Get a response for a manually configured HTTPRequest object.
+    ///
+    /// An interceptor's `.retryRequest` sends the request again, at most `configuration.maximumRetryCount` times.
+    /// Every attempt starts from `httpRequest` as passed in here and runs the request interceptors again.
     /// - Parameters:
     ///   - httpRequest: The HTTPRequest to send.
     ///   - requestConfiguration: The request configuration.
@@ -273,7 +276,34 @@ extension NetworkClientImpl {
         for httpRequest: HTTPRequest,
         requestConfiguration: some NetworkRequest
     ) async throws(NetworkTransportError) -> HTTPResponse {
-        var httpRequest = httpRequest
+        try await getResponse(for: httpRequest, requestConfiguration: requestConfiguration, retryCount: 0)
+    }
+
+    /// One attempt of `getResponse(for:requestConfiguration:)`. A retry calls this again with `retryCount + 1`, so
+    /// the count lives on the call stack: no state is shared between requests.
+    /// - Parameters:
+    ///   - originalRequest: The request as built, before any interceptor ran.
+    ///   - requestConfiguration: The request configuration.
+    ///   - retryCount: How many attempts happened before this one.
+    /// - Returns: A HTTPResponse as provided by server or stubs.
+    private func getResponse(
+        for originalRequest: HTTPRequest,
+        requestConfiguration: some NetworkRequest,
+        retryCount: Int
+    ) async throws(NetworkTransportError) -> HTTPResponse {
+        let canRetry = retryCount < configuration.maximumRetryCount
+
+        /// The next attempt, from the original request.
+        func retry() async throws(NetworkTransportError) -> HTTPResponse {
+            try await getResponse(
+                for: originalRequest,
+                requestConfiguration: requestConfiguration,
+                retryCount: retryCount + 1
+            )
+        }
+
+        var httpRequest = originalRequest
+        httpRequest.retryCount = retryCount
         try await intercept(request: requestConfiguration, httpRequest: &httpRequest)
 
         let rawResponse: (Data, URLResponse)
@@ -289,8 +319,8 @@ extension NetworkClientImpl {
 
             let networkError = urlError.networkError
             let result = await intercept(request: requestConfiguration, error: networkError)
-            if case .retryRequest = result {
-                return try await getResponse(for: httpRequest, requestConfiguration: requestConfiguration)
+            if case .retryRequest = result, canRetry {
+                return try await retry()
             }
             throw networkError
         }
@@ -306,8 +336,8 @@ extension NetworkClientImpl {
         guard requestConfiguration.allowedStatusCodes.contains(statusCode) else {
             let networkError = NetworkTransportError.errorStatusCode(code: statusCode, response: httpResponse)
             let result = await intercept(request: requestConfiguration, error: networkError)
-            if case .retryRequest = result {
-                return try await getResponse(for: httpRequest, requestConfiguration: requestConfiguration)
+            if case .retryRequest = result, canRetry {
+                return try await retry()
             }
             throw networkError
         }
@@ -315,15 +345,15 @@ extension NetworkClientImpl {
         do {
             let interceptResult = try await intercept(request: requestConfiguration, httpResponse: &httpResponse)
 
-            if case .retryRequest = interceptResult {
-                return try await getResponse(for: httpRequest, requestConfiguration: requestConfiguration)
+            if case .retryRequest = interceptResult, canRetry {
+                return try await retry()
             }
         } catch {
             // When a response interceptor throws a NetworkTransportError, give the error
             // interceptors a chance to handle it (e.g. logging, lock-out display).
             let result = await intercept(request: requestConfiguration, error: error)
-            if case .retryRequest = result {
-                return try await getResponse(for: httpRequest, requestConfiguration: requestConfiguration)
+            if case .retryRequest = result, canRetry {
+                return try await retry()
             }
             throw error
         }
