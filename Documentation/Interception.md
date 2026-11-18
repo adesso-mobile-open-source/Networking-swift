@@ -177,7 +177,7 @@ Return values:
 | Result | Effect |
 |---|---|
 | `.defaultHandling` | Continue normally |
-| `.retryRequest` | Re-execute the entire request, re-evaluating request interceptors |
+| `.retryRequest` | Re-execute the entire request, re-evaluating request interceptors (at most `maximumRetryCount` times, see [Retries](#retries)) |
 
 ### Creating a response interceptor
 
@@ -225,7 +225,7 @@ Return values:
 | Result | Effect |
 |---|---|
 | `.defaultHandling` | Rethrow the error to the call site |
-| `.retryRequest` | Re-execute the entire request, re-evaluating request interceptors |
+| `.retryRequest` | Re-execute the entire request, re-evaluating request interceptors (at most `maximumRetryCount` times, see [Retries](#retries)) |
 
 ### Creating an error interceptor
 
@@ -239,6 +239,42 @@ struct LogAndRetryErrorInterceptor: NetworkErrorInterceptor {
         return .defaultHandling
     }
 }
+```
+
+---
+
+## Retries
+
+A `.retryRequest` from a response or error interceptor sends the request again:
+
+- **From the request as it was built.** Every attempt runs the request interceptors again on a fresh copy of the
+  request, not on the previous attempt's intercepted one. An auth interceptor therefore sets a fresh token on every
+  attempt, and interceptors that append to a header or query do not accumulate.
+- **Bounded.** `NetworkClientConfiguration.maximumRetryCount` (default `3`) limits how often a request is retried.
+  Once it is reached, an error interceptor's `.retryRequest` rethrows the error, and a response interceptor's
+  `.retryRequest` returns the response as if `.defaultHandling` had been returned. `0` disables retries.
+- **Counted.** `HTTPRequest.retryCount` is `0` on the first attempt and grows by one per retry. Request interceptors
+  see it on the request; response interceptors on `response.request`; error interceptors on the response of an
+  `.errorStatusCode` error.
+
+Interceptors are `async`, so a backoff is just a suspension inside the interceptor:
+
+```swift
+struct BackoffErrorInterceptor: NetworkErrorInterceptor {
+    func intercept(error: NetworkTransportError) async -> NetworkErrorInterceptorResult {
+        guard case let .errorStatusCode(code, response) = error, code == 429 || code >= 500 else {
+            return .defaultHandling
+        }
+        // 1 s, 2 s, 4 s, ... — cancelling the task ends the wait and the retry.
+        let delay = Duration.seconds(1 << min(response.request.retryCount, 6))
+        guard (try? await Task.sleep(for: delay)) != nil else { return .defaultHandling }
+        return .retryRequest
+    }
+}
+
+let client = NetworkClientImpl(
+    configuration: .init(environment: environment, errorInterceptor: [BackoffErrorInterceptor()], maximumRetryCount: 5)
+)
 ```
 
 ---

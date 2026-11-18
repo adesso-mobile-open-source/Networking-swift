@@ -16,6 +16,9 @@ import Foundation
 
 /// Configuration for the `NetworkClient`.
 public struct NetworkClientConfiguration: Sendable {
+    /// The default for `maximumRetryCount`: a request is sent at most four times.
+    public static let defaultMaximumRetryCount = 3
+
     /// The network environment that provides the base URL and default headers for all requests.
     var environment: NetworkEnvironment
     /// Gets or sets the default encoder for HTTP bodies.
@@ -38,6 +41,10 @@ public struct NetworkClientConfiguration: Sendable {
     /// The URLSession configuration used to create the underlying URLSession.
     /// Default is an ephemeral configuration with a 20-second timeout for requests.
     var sessionConfiguration: URLSessionConfiguration
+    /// Gets or sets how often a request may be retried when an interceptor returns `.retryRequest`. Once the limit
+    /// is reached, an error interceptor's `.retryRequest` rethrows the error and a response interceptor's
+    /// `.retryRequest` returns the response as if `.defaultHandling` had been returned. `0` disables retries.
+    var maximumRetryCount: Int
 
     /// Initializes a new instance of `NetworkClientConfiguration`.
     /// - Parameters:
@@ -50,6 +57,8 @@ public struct NetworkClientConfiguration: Sendable {
     ///   - errorInterceptor: The default error interceptor for TLS/connection errors and response-interceptor failures.
     ///     Default is a no-op.
     ///   - sessionConfiguration: The URLSession configuration. Default is an ephemeral configuration with a 20-second timeout.
+    ///   - maximumRetryCount: How often a request may be retried on `.retryRequest`. Default is
+    ///     `NetworkClientConfiguration.defaultMaximumRetryCount` (3). Negative values count as `0`.
     public init(
         environment: NetworkEnvironment,
         httpBodyEncoder: DataEncoding = JSONEncoder(),
@@ -57,8 +66,10 @@ public struct NetworkClientConfiguration: Sendable {
         requestInterceptor: NetworkRequestInterceptor = ClosureRequestInterceptor { _ in },
         responseInterceptor: NetworkResponseInterceptor = ClosureResponseInterceptor { _ in .defaultHandling },
         errorInterceptor: NetworkErrorInterceptor = ClosureErrorInterceptor { _ in .defaultHandling },
-        sessionConfiguration: URLSessionConfiguration? = nil
+        sessionConfiguration: URLSessionConfiguration? = nil,
+        maximumRetryCount: Int = Self.defaultMaximumRetryCount
     ) {
+        self.maximumRetryCount = max(0, maximumRetryCount)
         self.httpBodyEncoder = httpBodyEncoder
         self.httpBodyDecoder = httpBodyDecoder
         self.requestInterceptor = requestInterceptor
@@ -87,6 +98,8 @@ public struct NetworkClientConfiguration: Sendable {
     ///   - errorInterceptor: The default error interceptor for TLS/connection errors and response-interceptor failures.
     ///     Default is a no-op.
     ///   - sessionConfiguration: The URLSession configuration. Default is an ephemeral configuration with a 20-second timeout.
+    ///   - maximumRetryCount: How often a request may be retried on `.retryRequest`. Default is
+    ///     `NetworkClientConfiguration.defaultMaximumRetryCount` (3). Negative values count as `0`.
     public init(
         environment: NetworkEnvironment,
         httpBodyEncoder: DataEncoding = JSONEncoder(),
@@ -94,8 +107,10 @@ public struct NetworkClientConfiguration: Sendable {
         requestInterceptor: ChainedRequestInterceptor = [],
         responseInterceptor: ChainedResponseInterceptor = [],
         errorInterceptor: ChainedErrorInterceptor = [],
-        sessionConfiguration: URLSessionConfiguration? = nil
+        sessionConfiguration: URLSessionConfiguration? = nil,
+        maximumRetryCount: Int = Self.defaultMaximumRetryCount
     ) {
+        self.maximumRetryCount = max(0, maximumRetryCount)
         self.httpBodyEncoder = httpBodyEncoder
         self.httpBodyDecoder = httpBodyDecoder
         self.requestInterceptor = requestInterceptor
